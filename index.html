@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh‑CN">
+<head>
+<meta charset="UTF‑8">
+<meta name="viewport" content="width=device‑width, initial‑scale=1.0">
+<title>The Old Bookstore｜旧书店 悬疑小说阅读闯关</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{background:#222834;color:#e8eaf6;padding:24px;max-width:720px;margin:0 auto}
+.wrapper{background:#2d3544;padding:28px;border-radius:16px;box-shadow:0 4px 20px #11151c}
+h1{text-align:center;font-size:22px;color:#f0c987;margin-bottom:26px}
+.story-area{background:#384152;padding:20px;border-radius:12px;line-height:1.8;font-size:16px;margin-bottom:24px}
+.chapter-mark{color:#f0c987;font-weight:bold;margin-bottom:10px}
+.word‑card{background:#444e62;padding:18px;border-radius:12px;margin:22px 0}
+.pinyin{color:#ffbc70;font-size:19px;margin:8px 0}
+.zh‑word{font-size:26px;margin:10px 0}
+.meaning-text{color:#c5c9d6}
+button{padding:12px 18px;border:none;border-radius:10px;margin:7px 5px;font-size:16px;cursor:pointer}
+.btn‑speak{background:#805ad5;color:white}
+.btn‑mic{background:#3182ce;color:white}
+.btn‑nextpage{background:#38a169;color:white;display:none}
+.box‑wrong{background:#592b2b;color:#ffd2d2;padding:14px;border-radius:10px;margin-top:14px}
+.box‑right{background:#27493c;color:#c1f0d8;padding:14px;border-radius:10px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrapper">
+<h1>The Old Bookstore</h1>
+
+<div class="story-area">
+<div class="chapter-mark">Page 1</div>
+<p>Rain poured down over the quiet downtown street.
+Lila had lost her way while searching for an apartment she planned to rent.
+Down a narrow alley, she spotted an old bookstore with dim warm light leaking from its dusty windows.
+There was no sign outside, only a worn wooden door slightly open.
+Curiosity pulled her inside. The air smelled of aged paper and damp wood.
+Shelves stretched high toward the ceiling, filled with countless old books.
+The shop owner was nowhere to be seen.
+On a central table lay one locked black notebook. Before she could touch it, a soft voice echoed from the darkness…</p>
+<p style="margin-top:14px;color:#ffdd94"><em>🔒 To unlock Page 2 and continue the mystery story, you must pronounce the Chinese word correctly.</em></p>
+</div>
+
+<div class="word‑card">
+<h3>📖 New Chinese Word</h3>
+<div class="pinyin">shū diàn</div>
+<div class="zh‑word">书店</div>
+<div class="meaning-text">Meaning: bookstore</div>
+</div>
+
+<button class="btn‑speak" onclick="playStandardVoice()">🔊 Play standard pronunciation</button>
+<button class="btn‑mic" onclick="startListenMic()">🎤 Click here and read this Chinese word</button>
+
+<div id="feedbackBlock"></div>
+
+<button id="unlockNextBtn" class="btn‑nextpage" onclick="openPageTwo()">✅ Pronunciation correct! Go to Page2</button>
+</div>
+
+<script>
+//当前闯关生词
+const targetChineseWord = "书店"
+const targetPinYin = "shū diàn"
+
+//第二页悬疑小说内容，剧情继续往下推进，埋下新悬念
+const page2Html = `
+<h1>The Old Bookstore</h1>
+<div class="story-area">
+<div class="chapter-mark">Page 2</div>
+<p>“You should not open that notebook.”</p>
+<p>Lila jumped. An old man stood in the shadow between bookshelves. His eyes were calm but sharp.
+He told her most books inside this special bookstore could show people fragments of forgotten memories.
+The black notebook belonged to a girl who disappeared twenty‑five years ago.
+Rain beat harder against the window. Lila glanced again at the locked notebook.
+She could not stop herself from wondering what secrets were hidden inside its pages…</p>
+<p style="margin-top:14px;color:#ffdd94"><em>🔒 Page3 locked. Next new Chinese word challenge will appear here.</em></p>
+</div>
+<p style="text‑align:center;color:#b0b8cc;margin‑top:20px">Story will keep extending in later pages.</p>
+`
+
+let speechRec;
+
+//播放标准中文读音
+function playStandardVoice(){
+const utter = new SpeechSynthesisUtterance(targetChineseWord)
+utter.lang = "zh‑CN"
+utter.rate = 0.72
+window.speechSynthesis.speak(utter)
+}
+
+//启动麦克风识别
+function startListenMic(){
+if(!window.webkitSpeechRecognition){
+alert("⚠️ Please open this file with Google Chrome on computer. Mobile local files cannot access microphone function.")
+return
+}
+speechRec = new webkitSpeechRecognition()
+speechRec.lang = "zh‑CN"
+speechRec.interimResults = false
+speechRec.onresult = function(res){
+const userReadText = res.results[0][0].transcript.trim()
+judgePronunciation(userReadText)
+}
+speechRec.start()
+}
+
+//判断朗读是否正确
+function judgePronunciation(userInputText){
+const feedDom = document.getElementById("feedbackBlock")
+if(userInputText === targetChineseWord){
+feedDom.innerHTML = `<div class="box‑right">✅ Excellent! Your pronunciation is accurate. The next page of the mystery story has been unlocked.</div>`
+document.getElementById("unlockNextBtn").style.display = "inline‑block"
+}else{
+feedDom.innerHTML = `<div class="box‑wrong">❌ Recognized you read: ${userInputText}<br>Required word：${targetChineseWord} （${targetPinYin}）<br>Listen to the audio and read it once more.</div>`
+//读错自动重播标准发音
+setTimeout(()=>{playStandardVoice()}, 750)
+}
+}
+
+//解锁第二页，加载后续小说剧情
+function openPageTwo(){
+document.querySelector(".wrapper").innerHTML = page2Html
+}
+</script>
+</body>
+</html>
