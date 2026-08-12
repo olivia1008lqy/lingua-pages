@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh‑CN">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF‑8">
-<meta name="viewport" content="width=device‑width, initial‑scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Old Bookstore｜旧书店 悬疑小说阅读闯关</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
@@ -78,34 +78,69 @@ She could not stop herself from wondering what secrets were hidden inside its pa
 
 let speechRec;
 
+function getChineseVoice(){
+const voices = window.speechSynthesis.getVoices()
+return voices.find(voice => /^zh[-_]CN$/i.test(voice.lang))
+|| voices.find(voice => /^zh/i.test(voice.lang))
+|| null
+}
+
 //播放标准中文读音
 function playStandardVoice(){
+if(!("speechSynthesis" in window)){
+alert("This browser does not support text-to-speech. Please use Chrome, Edge, or Safari.")
+return
+}
 const utter = new SpeechSynthesisUtterance(targetChineseWord)
-utter.lang = "zh‑CN"
+utter.lang = "zh-CN"
 utter.rate = 0.72
+const chineseVoice = getChineseVoice()
+if(chineseVoice) utter.voice = chineseVoice
+window.speechSynthesis.cancel()
+window.speechSynthesis.resume()
 window.speechSynthesis.speak(utter)
 }
 
 //启动麦克风识别
 function startListenMic(){
-if(!window.webkitSpeechRecognition){
-alert("⚠️ Please open this file with Google Chrome on computer. Mobile local files cannot access microphone function.")
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+if(!SpeechRecognition){
+alert("⚠️ Speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.")
 return
 }
-speechRec = new webkitSpeechRecognition()
-speechRec.lang = "zh‑CN"
+speechRec = new SpeechRecognition()
+speechRec.lang = "zh-CN"
 speechRec.interimResults = false
+speechRec.continuous = false
+speechRec.maxAlternatives = 5
+document.getElementById("feedbackBlock").innerHTML = `<div class="box‑right">🎤 Listening… Please say ${targetChineseWord}.</div>`
 speechRec.onresult = function(res){
-const userReadText = res.results[0][0].transcript.trim()
-judgePronunciation(userReadText)
+const alternatives = Array.from(res.results[0]).map(result => result.transcript)
+judgePronunciation(alternatives)
+}
+speechRec.onerror = function(event){
+const messages = {
+"not-allowed": "Microphone access was blocked. Please allow microphone permission and try again.",
+"no-speech": "No speech was detected. Please move closer to the microphone and try again.",
+"network": "Speech recognition needs an internet connection. Please check your connection and try again."
+}
+document.getElementById("feedbackBlock").innerHTML = `<div class="box‑wrong">❌ ${messages[event.error] || "Speech recognition failed. Please try again."}</div>`
 }
 speechRec.start()
 }
 
 //判断朗读是否正确
-function judgePronunciation(userInputText){
+function normalizeChinese(text){
+return text.normalize("NFKC").replace(/[\s，。！？、,.!?；;：:]/g, "")
+}
+
+function judgePronunciation(recognizedAlternatives){
 const feedDom = document.getElementById("feedbackBlock")
-if(userInputText === targetChineseWord){
+const alternatives = Array.isArray(recognizedAlternatives) ? recognizedAlternatives : [recognizedAlternatives]
+const target = normalizeChinese(targetChineseWord)
+const matched = alternatives.some(text => normalizeChinese(text) === target)
+const userInputText = alternatives[0] || ""
+if(matched){
 feedDom.innerHTML = `<div class="box‑right">✅ Excellent! Your pronunciation is accurate. The next page of the mystery story has been unlocked.</div>`
 document.getElementById("unlockNextBtn").style.display = "inline‑block"
 }else{
