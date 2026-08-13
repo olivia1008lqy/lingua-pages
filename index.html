@@ -1,159 +1,407 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Old Bookstore｜旧书店 悬疑小说阅读闯关</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
-body{background:#222834;color:#e8eaf6;padding:24px;max-width:720px;margin:0 auto}
-.wrapper{background:#2d3544;padding:28px;border-radius:16px;box-shadow:0 4px 20px #11151c}
-h1{text-align:center;font-size:22px;color:#f0c987;margin-bottom:26px}
-.story-area{background:#384152;padding:20px;border-radius:12px;line-height:1.8;font-size:16px;margin-bottom:24px}
-.chapter-mark{color:#f0c987;font-weight:bold;margin-bottom:10px}
-.word‑card{background:#444e62;padding:18px;border-radius:12px;margin:22px 0}
-.pinyin{color:#ffbc70;font-size:19px;margin:8px 0}
-.zh‑word{font-size:26px;margin:10px 0}
-.meaning-text{color:#c5c9d6}
-button{padding:12px 18px;border:none;border-radius:10px;margin:7px 5px;font-size:16px;cursor:pointer}
-.btn‑speak{background:#805ad5;color:white}
-.btn‑mic{background:#3182ce;color:white}
-.btn‑nextpage{background:#38a169;color:white;display:none}
-.box‑wrong{background:#592b2b;color:#ffd2d2;padding:14px;border-radius:10px;margin-top:14px}
-.box‑right{background:#27493c;color:#c1f0d8;padding:14px;border-radius:10px;margin-top:14px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#131d2b">
+  <title>Lingua Pages — Learn Chinese Through Stories</title>
+  <style>
+    :root{--ink:#49364f;--muted:#816f86;--paper:#fff9fc;--card:#fff;--gold:#e7aa37;--red:#dc6e91;--jade:#47a78d;--navy:#6e4c75;--line:#efdce8;--pink:#f7b8cf;--lilac:#d9c7f2;--shadow:0 18px 50px rgba(101,66,98,.15)}
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(circle at 12% 8%,#ffe4ef 0 12%,transparent 35%),radial-gradient(circle at 90% 18%,#e9dcff 0 10%,transparent 32%),linear-gradient(145deg,#fff5f9,#f7f0ff);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+    button{font:inherit}
+    .shell{width:min(960px,calc(100% - 28px));margin:22px auto 56px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(125deg,#79547f,#a46b91);color:white;padding:16px 20px;border-radius:22px 22px 8px 8px}
+    .brand{font-family:Georgia,serif;font-size:22px;letter-spacing:.02em}.brand span{color:#ffe19d}.home-btn{display:none;background:rgba(255,255,255,.16);color:white;border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:9px 12px;cursor:pointer}.header-spacer{display:flex;align-items:center;gap:12px}
+    .progress-label{font-size:13px;color:#c9d1de;text-align:right}.progress-track{width:150px;height:7px;background:#354154;border-radius:99px;margin-top:7px;overflow:hidden}.progress-bar{height:100%;background:#efbd53;transition:width .45s ease}
+    main{background:rgba(255,249,252,.94);padding:clamp(20px,4vw,42px);border-radius:8px 8px 22px 22px;box-shadow:var(--shadow)}
+    .home-hero{text-align:center;padding:18px 10px 28px}.sparkles{font-size:24px;letter-spacing:10px}.home-hero h1{max-width:660px;margin:12px auto 14px}.home-hero p{max-width:590px;margin:auto;color:var(--muted);font-size:17px;line-height:1.65}.hero-badge{display:inline-flex;align-items:center;gap:8px;background:#fff0f6;color:#a34f73;border:1px solid #f5c9db;border-radius:99px;padding:8px 13px;font-size:13px;font-weight:800}
+    .home-progress{background:white;border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 auto 28px;max-width:680px;display:flex;align-items:center;gap:14px}.home-progress .flower{font-size:30px}.home-progress-copy{flex:1}.home-progress-copy strong{display:block}.home-progress-copy span{font-size:13px;color:var(--muted)}.home-progress-track{height:9px;background:#f3e8ef;border-radius:99px;margin-top:8px;overflow:hidden}.home-progress-fill{height:100%;background:linear-gradient(90deg,var(--pink),#bd91df);border-radius:99px}
+    .mission-heading{display:flex;align-items:end;justify-content:space-between;margin-bottom:14px}.mission-heading h2{margin:0;font:700 25px Georgia,serif}.mission-heading span{font-size:13px;color:var(--muted)}
+    .mission-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.mission-card{position:relative;background:white;border:1px solid var(--line);border-radius:18px;padding:20px;min-height:230px;display:flex;flex-direction:column;box-shadow:0 9px 24px rgba(118,80,111,.08)}.mission-card.locked{filter:grayscale(.25);opacity:.67}.mission-number{font-size:12px;font-weight:850;color:var(--red);letter-spacing:.12em;text-transform:uppercase}.mission-icon{font-size:38px;margin:15px 0 10px}.mission-card h3{font:700 20px Georgia,serif;margin:0 0 8px}.mission-card p{font-size:14px;line-height:1.5;color:var(--muted);margin:0 0 18px}.mission-status{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px}.stars{color:#edae36;letter-spacing:2px}.mission-start{border:0;background:#f3d4e2;color:#864766;border-radius:9px;padding:9px 12px;font-weight:800;cursor:pointer}.mission-start:disabled{background:#eee8ec;color:#9c9199;cursor:not-allowed}.daily-note{text-align:center;color:var(--muted);font-size:13px;margin:24px 0 0}
+    .path-picker{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 auto 28px;max-width:680px}.path-card{border:1px solid var(--line);background:white;border-radius:18px;padding:18px;text-align:left;cursor:pointer;color:var(--ink);box-shadow:0 8px 22px rgba(118,80,111,.07)}.path-card strong{display:block;font:700 20px Georgia,serif;margin:7px 0 4px}.path-card span{color:var(--muted);font-size:13px}.path-card.comic{background:linear-gradient(145deg,#fff4f8,#f4edff)}
+    .section-back{border:0;background:#f4dfeb;color:#7e4967;border-radius:99px;padding:10px 14px;font-weight:800;cursor:pointer;margin-bottom:18px}.comic-library-head{text-align:center}.comic-library-head h1{margin-bottom:10px}.comic-library-head p{color:var(--muted);margin:0 auto 28px;max-width:560px;line-height:1.6}.comic-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.comic-cover{background:white;border:1px solid var(--line);border-radius:18px;padding:22px;text-align:center}.comic-cover.locked{opacity:.58}.cover-art{height:120px;display:grid;place-items:center;font-size:52px;background:linear-gradient(145deg,#ffe5ef,#eee3ff);border-radius:14px;margin-bottom:16px}.comic-cover h3{font:700 20px Georgia,serif;margin:0 0 7px}.comic-cover p{font-size:13px;color:var(--muted);margin:0 0 16px}.comic-open{width:100%;border:0;border-radius:10px;padding:11px;background:#9a6597;color:white;font-weight:800;cursor:pointer}.comic-open:disabled{background:#ddd4da;color:#8f858c}.comic-reader{max-width:660px;margin:auto}.comic-top{text-align:center}.comic-count{color:var(--red);font-weight:850;font-size:12px;letter-spacing:.12em;text-transform:uppercase}.comic-panel{margin-top:20px;background:white;border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow)}.comic-scene{height:210px;display:grid;place-items:center;background:linear-gradient(160deg,#ffe8f1,#ede6ff);border-radius:17px;font-size:60px;letter-spacing:8px;overflow:hidden}.speech-bubble{position:relative;background:white;border:2px solid #8d648e;border-radius:20px;padding:18px;margin:-20px 20px 0;text-align:center;font-size:28px;font-weight:800;box-shadow:0 8px 20px rgba(83,53,83,.12)}.comic-help{text-align:center;color:var(--muted);margin:12px 0}.comic-help strong{display:block;color:var(--red);font-size:17px}.comic-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.comic-actions .btn{background:#f3dce8;color:#75435f}.comic-actions .next-panel{background:var(--jade);color:white}.comic-dots{text-align:center;color:#c395b2;letter-spacing:5px;margin-top:16px}.badge-pop{text-align:center;padding:35px 10px}.badge-pop .big-badge{font-size:64px}.badge-pop h2{font:700 32px Georgia,serif;margin:10px}.badge-pop p{color:var(--muted)}
+    button:focus-visible{outline:3px solid #4d90fe;outline-offset:3px}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+    .eyebrow{margin:0 0 8px;color:var(--red);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+    h1{margin:0 0 22px;font:700 clamp(30px,5vw,48px)/1.06 Georgia,serif}
+    .story{font:18px/1.85 Georgia,serif;color:#354055;border-left:3px solid var(--gold);padding:4px 0 4px 22px;max-width:780px}
+    .story p{margin:0}.story .mystery{margin-top:14px;color:#8b4b36;font-style:italic}
+    .lesson{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.72fr);gap:22px;margin-top:30px}
+    .word-card,.coach-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+    .word-card{text-align:center;background:radial-gradient(circle at 50% 25%,#fff,#fff8e9)}
+    .word-label,.coach-title{font-size:12px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+    .hanzi{font-family:"Noto Serif SC","Microsoft YaHei",serif;font-size:64px;line-height:1.15;margin:14px 0 4px;color:#1d2d3f}
+    .pinyin{font-size:21px;color:var(--red);font-weight:700}.meaning{color:var(--muted);margin-top:6px}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+    .btn{border:0;border-radius:11px;padding:13px 15px;font-weight:750;cursor:pointer;transition:transform .15s,filter .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .btn:hover{filter:brightness(1.05);transform:translateY(-1px)}.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .speak{background:#eee7ff;color:#543d86}.record{background:var(--red);color:white}.record.active{animation:pulse 1.2s infinite;background:#a72c27}.playback{grid-column:1/-1;background:#e4f1ed;color:#176b56}
+    @keyframes pulse{50%{box-shadow:0 0 0 7px rgba(207,75,63,.15)}}
+    .coach-card{display:flex;flex-direction:column}.coach-title{margin-bottom:13px}.tip{font-size:14px;line-height:1.55;color:var(--muted);margin:0 0 16px}.tip strong{color:var(--ink)}
+    .feedback{flex:1;min-height:116px;border-radius:12px;background:#f5f3ed;padding:15px;line-height:1.5;color:#525d70}.feedback.listening{background:#fff1ee;color:#873930}.feedback.success{background:#e7f4ee;color:#14634e}.feedback.error{background:#fff0ee;color:#873930}
+    .feedback strong{display:block;color:inherit;margin-bottom:5px}.recognized{margin-top:8px;font-size:13px;opacity:.82}
+    .continue{width:100%;margin-top:14px;background:var(--jade);color:white;display:none}.continue.show{display:flex}
+    .browser-note{margin:22px 0 0;font-size:12px;color:var(--muted);text-align:center}
+    .complete{text-align:center;padding:38px 10px}.complete .seal{font-size:58px}.complete h2{font:700 34px Georgia,serif;margin:12px}.complete p{color:var(--muted);line-height:1.7}.restart{margin:20px auto 0;background:var(--navy);color:white}
+    @media(max-width:720px){body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}.shell{width:min(100% - 16px,620px);margin:8px auto 30px}header{position:sticky;top:0;z-index:5;border-radius:18px 18px 7px 7px}.brand{font-size:19px}main{padding:22px 16px}.lesson{grid-template-columns:1fr}.hanzi{font-size:54px}.story{font-size:17px;padding-left:16px}.progress-track{width:80px}.actions{grid-template-columns:1fr}.playback{grid-column:auto}.mission-grid,.comic-grid{grid-template-columns:1fr}.mission-card{min-height:0;display:grid;grid-template-columns:auto 1fr;column-gap:14px}.mission-icon{grid-row:1/4;margin:4px 0}.mission-number,.mission-card h3,.mission-card p,.mission-status{grid-column:2}.home-progress{align-items:flex-start}.home-hero{padding-top:8px}.home-hero h1{font-size:36px}.home-btn{min-width:44px;min-height:44px}.path-picker{grid-template-columns:1fr}.comic-scene{height:180px;font-size:44px}.speech-bubble{font-size:23px;margin:-16px 10px 0}.comic-actions{grid-template-columns:1fr}}
+  </style>
 </head>
 <body>
-<div class="wrapper">
-<h1>The Old Bookstore</h1>
+  <div class="shell">
+    <header>
+      <div class="header-spacer"><button class="home-btn" id="homeBtn" type="button">⌂ Home</button><div class="brand">Lingua <span>Pages</span></div></div>
+      <div class="progress-label" id="headerProgress"><span id="progressText">Chapter 1 of 6</span><div class="progress-track"><div id="progressBar" class="progress-bar"></div></div></div>
+    </header>
+    <main id="app"></main>
+  </div>
 
-<div class="story-area">
-<div class="chapter-mark">Page 1</div>
-<p>Rain poured down over the quiet downtown street.
-Lila had lost her way while searching for an apartment she planned to rent.
-Down a narrow alley, she spotted an old bookstore with dim warm light leaking from its dusty windows.
-There was no sign outside, only a worn wooden door slightly open.
-Curiosity pulled her inside. The air smelled of aged paper and damp wood.
-Shelves stretched high toward the ceiling, filled with countless old books.
-The shop owner was nowhere to be seen.
-On a central table lay one locked black notebook. Before she could touch it, a soft voice echoed from the darkness…</p>
-<p style="margin-top:14px;color:#ffdd94"><em>🔒 To unlock Page 2 and continue the mystery story, you must pronounce the Chinese word correctly.</em></p>
-</div>
+  <script>
+    const chapters = [
+      {
+        title:"The Door Without a Sign",
+        story:"Rain poured over the quiet street as Lila searched for her new apartment. Down a narrow alley, she found an old bookstore glowing with a dim amber light. There was no sign outside—only a worn wooden door left slightly open.",
+        mystery:"A voice from the darkness whispered: ‘If you want to enter, name this place.’",
+        word:"书店", pinyin:"shū diàn", meaning:"bookstore",
+        tip:"Keep <strong>shū</strong> high and level. Let <strong>diàn</strong> fall sharply, like a firm statement."
+      },
+      {
+        title:"The Locked Notebook",
+        story:"Inside, shelves climbed toward the ceiling. On a central table lay a black notebook sealed with a brass lock. An old bookseller stepped from the shadows and warned Lila that its pages held memories people had tried to forget.",
+        mystery:"The lock clicked once. A single word appeared across its cover in silver ink.",
+        word:"秘密", pinyin:"mì mì", meaning:"secret",
+        tip:"Both syllables use the fourth tone. Say each <strong>mì</strong> with a clear, quick downward fall."
+      },
+      {
+        title:"The Girl in the Photograph",
+        story:"The notebook opened to a faded photograph of a girl standing outside the same bookstore twenty-five years earlier. She looked exactly like Lila. Beneath it was a handwritten warning: ‘When the clock stops, do not look in the mirror.’",
+        mystery:"From the back room came the slow tick of a clock—and then complete silence.",
+        word:"镜子", pinyin:"jìng zi", meaning:"mirror",
+        tip:"Drop your voice firmly on <strong>jìng</strong>. Keep <strong>zi</strong> short, light, and unstressed."
+      },
+      {
+        title:"The Moonlit Message",
+        story:"Lila held the magic mirror near the window. Under the bright moon, silver writing appeared across the glass: ‘Find what opens the hidden gate.’",
+        mystery:"A tiny golden key shape began to glow inside the mirror.",
+        word:"月亮", pinyin:"yuè liang", meaning:"moon",
+        tip:"Let <strong>yuè</strong> fall sharply. Keep <strong>liang</strong> short, light, and unstressed."
+      },
+      {
+        title:"The Golden Key",
+        story:"The mirror guided Lila to a dusty storybook. Between its pages, she found a sparkling golden key tied with a faded pink ribbon.",
+        mystery:"The key began to hum whenever Lila pointed it toward the garden wall.",
+        word:"钥匙", pinyin:"yào shi", meaning:"key",
+        tip:"Let <strong>yào</strong> drop firmly. Say <strong>shi</strong> softly with a neutral tone."
+      },
+      {
+        title:"The Secret Garden",
+        story:"Lila used the golden key to open a tiny moon-shaped door. Beyond it was a magical garden filled with glowing flowers and whispering pages.",
+        mystery:"At its center, a new book opened by itself to a map marked ‘Cloud Castle.’",
+        word:"花园", pinyin:"huā yuán", meaning:"garden",
+        tip:"Keep <strong>huā</strong> high and level, then let <strong>yuán</strong> rise."
+      }
+    ]
 
-<div class="word‑card">
-<h3>📖 New Chinese Word</h3>
-<div class="pinyin">shū diàn</div>
-<div class="zh‑word">书店</div>
-<div class="meaning-text">Meaning: bookstore</div>
-</div>
+    const comics = [
+      {title:"Mimi’s Missing Bow",cover:"🎀🐱",badge:"Pink Bow",panels:[
+        {scene:"🌸　👧　🪴🐱",zh:"你好，小猫！",py:"nǐ hǎo, xiǎo māo!",en:"Hello, kitty!"},
+        {scene:"🐱 👉 🎁",zh:"我的蝴蝶结呢？",py:"wǒ de hú dié jié ne?",en:"Where is my bow?"},
+        {scene:"👧　🪑🎀　✨",zh:"在这里！",py:"zài zhè lǐ!",en:"It’s here!"}]},
+      {title:"The Mooncake Picnic",cover:"🥮🌙",badge:"Moon Picnic",panels:[
+        {scene:"🌙　👧🧺👧",zh:"我有月饼。",py:"wǒ yǒu yuè bǐng.",en:"I have mooncakes."},
+        {scene:"👧　🥮➡️　👧",zh:"你想吃吗？",py:"nǐ xiǎng chī ma?",en:"Would you like some?"},
+        {scene:"✨👧🥮✨",zh:"想！谢谢！",py:"xiǎng! xiè xie!",en:"Yes! Thank you!"}]},
+      {title:"The Lantern Wish",cover:"🏮⭐",badge:"Shining Lantern",panels:[
+        {scene:"🏮🏮　👧　🏮",zh:"这个灯笼真漂亮！",py:"zhè ge dēng long zhēn piào liang!",en:"This lantern is beautiful!"},
+        {scene:"👧　📝💫",zh:"我的愿望是学中文。",py:"wǒ de yuàn wàng shì xué zhōng wén.",en:"My wish is to learn Chinese."},
+        {scene:"🏮　☁️　⭐",zh:"加油！你可以！",py:"jiā yóu! nǐ kě yǐ!",en:"Keep going! You can do it!"}]}
+    ]
 
-<button class="btn‑speak" onclick="playStandardVoice()">🔊 Play standard pronunciation</button>
-<button class="btn‑mic" onclick="startListenMic()">🎤 Click here and read this Chinese word</button>
+    let chapterIndex = Number(localStorage.getItem("linguaChapter") || 0)
+    if(chapterIndex < 0 || chapterIndex >= chapters.length) chapterIndex = 0
+    let completedMissions = Number(localStorage.getItem("linguaCompleted") || 0)
+    if(completedMissions < 0 || completedMissions > chapters.length) completedMissions = 0
+    let completedComics = Number(localStorage.getItem("linguaComicsCompleted") || 0)
+    if(completedComics < 0 || completedComics > comics.length) completedComics = 0
+    let comicIndex = 0
+    let panelIndex = 0
+    let recognition = null
+    let mediaRecorder = null
+    let mediaStream = null
+    let audioChunks = []
+    let recordingUrl = ""
+    let recognitionFinished = false
+    let recordingTimeout = null
+    let recordingSession = 0
 
-<div id="feedbackBlock"></div>
+    function renderHome(){
+      cleanupAudio()
+      document.getElementById("homeBtn").style.display = "none"
+      document.getElementById("headerProgress").style.display = "none"
+      const percent = Math.round((completedMissions / chapters.length) * 100)
+      const icons = ["🏡","🔐","🪞","🌙","🗝️","🌸"]
+      document.getElementById("app").innerHTML = `
+        <section class="home-hero">
+          <div class="hero-badge">🌸 Chinese, one story at a time</div>
+          <div class="sparkles">✦ ♡ ✦</div>
+          <h1>Your next adventure<br>speaks Chinese</h1>
+          <p>Practice real words, record your voice, and unlock each chapter of a magical mystery story.</p>
+        </section>
+        <section class="path-picker" aria-label="Choose a learning path">
+          <button class="path-card" id="storiesPath"><div>📖 ✨</div><strong>Story Missions</strong><span>${completedMissions}/${chapters.length} chapters complete</span></button>
+          <button class="path-card comic" id="comicsPath"><div>💬 🎀</div><strong>Comic Library</strong><span>${completedComics}/${comics.length} episodes complete</span></button>
+        </section>
+        <div class="home-progress">
+          <div class="flower">🌷</div>
+          <div class="home-progress-copy"><strong>${completedMissions ? `${completedMissions} mission${completedMissions === 1 ? "" : "s"} complete!` : "Your story begins here"}</strong><span>${completedMissions === chapters.length ? "You unlocked every chapter." : `${chapters.length - completedMissions} chapter${chapters.length - completedMissions === 1 ? "" : "s"} waiting to be unlocked`}</span><div class="home-progress-track"><div class="home-progress-fill" style="width:${percent}%"></div></div></div>
+        </div>
+        <div class="mission-heading" id="storyMissions"><h2>Story missions</h2><span>${completedMissions}/${chapters.length} completed</span></div>
+        <section class="mission-grid">
+          ${chapters.map((chapter,index) => {
+            const complete = index < completedMissions
+            const unlocked = index <= completedMissions
+            return `<article class="mission-card ${unlocked ? "" : "locked"}">
+              <div class="mission-number">Level ${Math.floor(index / 3) + 1} · Mission ${index + 1}</div><div class="mission-icon">${unlocked ? icons[index] : "🔒"}</div>
+              <h3>${chapter.title}</h3><p>Learn <span lang="zh-CN">${chapter.word}</span> · ${chapter.meaning}, then unlock the next clue.</p>
+              <div class="mission-status"><span class="stars">${complete ? "★" : "☆"}</span><button class="mission-start" data-mission="${index}" ${unlocked ? "" : "disabled"}>${complete ? "Replay" : unlocked ? "Start mission" : "Locked"}</button></div>
+            </article>`
+          }).join("")}
+        </section>
+        <p class="daily-note">🎀 Tip: short daily practice helps new sounds stick.</p>`
+      document.querySelectorAll(".mission-start:not(:disabled)").forEach(button => button.addEventListener("click",() => startMission(Number(button.dataset.mission))))
+      document.getElementById("storiesPath").addEventListener("click",()=>document.getElementById("storyMissions").scrollIntoView({behavior:"smooth"}))
+      document.getElementById("comicsPath").addEventListener("click",renderComicLibrary)
+    }
 
-<button id="unlockNextBtn" class="btn‑nextpage" onclick="openPageTwo()">✅ Pronunciation correct! Go to Page2</button>
-</div>
+    function startMission(index){
+      chapterIndex = index
+      localStorage.setItem("linguaChapter",chapterIndex)
+      render()
+      window.scrollTo({top:0,behavior:"smooth"})
+    }
 
-<script>
-//当前闯关生词
-const targetChineseWord = "书店"
-const targetPinYin = "shū diàn"
+    function renderComicLibrary(){
+      cleanupAudio()
+      document.getElementById("homeBtn").style.display = "inline-block"
+      document.getElementById("headerProgress").style.display = "none"
+      document.getElementById("app").innerHTML = `
+        <button class="section-back" id="comicBack">← Back to Home</button>
+        <section class="comic-library-head"><p class="eyebrow">Read · Listen · Explore</p><h1>Comic Library</h1><p>Tap each speech bubble to hear Mandarin, follow the story panel by panel, and collect a badge after every episode.</p></section>
+        <section class="comic-grid">
+          ${comics.map((comic,index)=>{
+            const unlocked = index <= completedComics
+            const complete = index < completedComics
+            return `<article class="comic-cover ${unlocked ? "" : "locked"}"><div class="cover-art" aria-hidden="true">${unlocked ? comic.cover : "🔒"}</div><h3>${comic.title}</h3><p>${complete ? `★ ${comic.badge} badge earned` : unlocked ? "3 interactive panels" : "Complete the previous comic to unlock"}</p><button class="comic-open" data-comic="${index}" ${unlocked ? "" : "disabled"}>${complete ? "Read again" : unlocked ? "Open comic" : "Locked"}</button></article>`
+          }).join("")}
+        </section>`
+      document.getElementById("comicBack").addEventListener("click",renderHome)
+      document.querySelectorAll(".comic-open:not(:disabled)").forEach(button=>button.addEventListener("click",()=>openComic(Number(button.dataset.comic))))
+    }
 
-//第二页悬疑小说内容，剧情继续往下推进，埋下新悬念
-const page2Html = `
-<h1>The Old Bookstore</h1>
-<div class="story-area">
-<div class="chapter-mark">Page 2</div>
-<p>“You should not open that notebook.”</p>
-<p>Lila jumped. An old man stood in the shadow between bookshelves. His eyes were calm but sharp.
-He told her most books inside this special bookstore could show people fragments of forgotten memories.
-The black notebook belonged to a girl who disappeared twenty‑five years ago.
-Rain beat harder against the window. Lila glanced again at the locked notebook.
-She could not stop herself from wondering what secrets were hidden inside its pages…</p>
-<p style="margin-top:14px;color:#ffdd94"><em>🔒 Page3 locked. Next new Chinese word challenge will appear here.</em></p>
-</div>
-<p style="text‑align:center;color:#b0b8cc;margin‑top:20px">Story will keep extending in later pages.</p>
-`
+    function openComic(index){ comicIndex=index; panelIndex=0; renderComicPanel() }
 
-let speechRec;
+    function renderComicPanel(){
+      const comic = comics[comicIndex]
+      const panel = comic.panels[panelIndex]
+      document.getElementById("homeBtn").style.display = "inline-block"
+      document.getElementById("headerProgress").style.display = "block"
+      document.getElementById("progressText").textContent = `Panel ${panelIndex + 1} of ${comic.panels.length}`
+      document.getElementById("progressBar").style.width = `${((panelIndex + 1) / comic.panels.length) * 100}%`
+      document.getElementById("app").innerHTML = `
+        <button class="section-back" id="libraryBack">← Comic Library</button>
+        <section class="comic-reader"><div class="comic-top"><div class="comic-count">Episode ${comicIndex + 1}</div><h1>${comic.title}</h1></div>
+          <article class="comic-panel"><div class="comic-scene" role="img" aria-label="Comic scene: ${panel.en}">${panel.scene}</div><button class="speech-bubble" id="comicSpeak" lang="zh-CN" aria-label="Hear ${panel.zh}">${panel.zh} 🔊</button><div class="comic-help"><strong>${panel.py}</strong>${panel.en}</div></article>
+          <div class="comic-dots" aria-label="Panel ${panelIndex + 1} of ${comic.panels.length}">${comic.panels.map((_,i)=>i===panelIndex?"●":"○").join("")}</div>
+          <div class="comic-actions"><button class="btn" id="prevPanel" ${panelIndex===0?"disabled":""}>← Previous</button><button class="btn next-panel" id="nextPanel">${panelIndex===comic.panels.length-1?"Complete episode ✓":"Next panel →"}</button></div>
+        </section>`
+      document.getElementById("libraryBack").addEventListener("click",renderComicLibrary)
+      document.getElementById("comicSpeak").addEventListener("click",()=>speakText(panel.zh))
+      document.getElementById("prevPanel").addEventListener("click",()=>{if(panelIndex>0){panelIndex--;renderComicPanel()}})
+      document.getElementById("nextPanel").addEventListener("click",()=>{if(panelIndex<comic.panels.length-1){panelIndex++;renderComicPanel()}else completeComic()})
+    }
 
-function getChineseVoice(){
-const voices = window.speechSynthesis.getVoices()
-return voices.find(voice => /^zh[-_]CN$/i.test(voice.lang))
-|| voices.find(voice => /^zh/i.test(voice.lang))
-|| null
-}
+    function completeComic(){
+      completedComics=Math.max(completedComics,comicIndex+1)
+      localStorage.setItem("linguaComicsCompleted",completedComics)
+      const comic=comics[comicIndex]
+      document.getElementById("headerProgress").style.display="none"
+      document.getElementById("app").innerHTML=`<div class="badge-pop"><div class="big-badge">${comic.cover}</div><p class="eyebrow">Episode complete</p><h2>${comic.badge} Badge!</h2><p>You read every panel and listened to Mandarin in context.</p><button class="btn restart" id="backToComics">Collect badge</button></div>`
+      document.getElementById("backToComics").addEventListener("click",renderComicLibrary)
+    }
 
-//播放标准中文读音
-function playStandardVoice(){
-if(!("speechSynthesis" in window)){
-alert("This browser does not support text-to-speech. Please use Chrome, Edge, or Safari.")
-return
-}
-const utter = new SpeechSynthesisUtterance(targetChineseWord)
-utter.lang = "zh-CN"
-utter.rate = 0.72
-const chineseVoice = getChineseVoice()
-if(chineseVoice) utter.voice = chineseVoice
-window.speechSynthesis.cancel()
-window.speechSynthesis.resume()
-window.speechSynthesis.speak(utter)
-}
+    function render(){
+      const chapter = chapters[chapterIndex]
+      document.getElementById("homeBtn").style.display = "inline-block"
+      document.getElementById("headerProgress").style.display = "block"
+      document.getElementById("progressText").textContent = `Chapter ${chapterIndex + 1} of ${chapters.length}`
+      document.getElementById("progressBar").style.width = `${((chapterIndex + 1) / chapters.length) * 100}%`
+      document.getElementById("app").innerHTML = `
+        <p class="eyebrow">Chapter ${chapterIndex + 1} · The Old Bookstore</p>
+        <h1>${chapter.title}</h1>
+        <section class="story"><p>${chapter.story}</p><p class="mystery">${chapter.mystery}</p></section>
+        <section class="lesson">
+          <div class="word-card">
+            <div class="word-label">Your word</div><div class="hanzi" lang="zh-CN">${chapter.word}</div>
+            <div class="pinyin">${chapter.pinyin}</div><div class="meaning">${chapter.meaning}</div>
+            <div class="actions">
+              <button class="btn speak" id="speakBtn" type="button">🔊 Hear it</button>
+              <button class="btn record" id="recordBtn" type="button">🎙 Record me</button>
+              <button class="btn playback" id="playbackBtn" type="button" disabled>▶ Play my recording</button>
+            </div>
+          </div>
+          <div class="coach-card">
+            <div class="coach-title">Pronunciation coach</div><p class="tip">${chapter.tip}</p>
+            <div class="feedback" id="feedback" role="status" aria-live="polite"><strong>Ready when you are</strong>Listen first, then record yourself saying the word. We will check what the browser heard.</div>
+            <button class="btn continue" id="continueBtn" type="button">Continue the story →</button>
+          </div>
+        </section>
+        <p class="browser-note">For best results, use Chrome or Edge on an HTTPS website and allow microphone access.</p>`
+      document.getElementById("speakBtn").addEventListener("click", speakWord)
+      document.getElementById("recordBtn").addEventListener("click", toggleRecording)
+      document.getElementById("playbackBtn").addEventListener("click", playRecording)
+      document.getElementById("continueBtn").addEventListener("click", nextChapter)
+    }
 
-//启动麦克风识别
-function startListenMic(){
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-if(!SpeechRecognition){
-alert("⚠️ Speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.")
-return
-}
-speechRec = new SpeechRecognition()
-speechRec.lang = "zh-CN"
-speechRec.interimResults = false
-speechRec.continuous = false
-speechRec.maxAlternatives = 5
-document.getElementById("feedbackBlock").innerHTML = `<div class="box‑right">🎤 Listening… Please say ${targetChineseWord}.</div>`
-speechRec.onresult = function(res){
-const alternatives = Array.from(res.results[0]).map(result => result.transcript)
-judgePronunciation(alternatives)
-}
-speechRec.onerror = function(event){
-const messages = {
-"not-allowed": "Microphone access was blocked. Please allow microphone permission and try again.",
-"no-speech": "No speech was detected. Please move closer to the microphone and try again.",
-"network": "Speech recognition needs an internet connection. Please check your connection and try again."
-}
-document.getElementById("feedbackBlock").innerHTML = `<div class="box‑wrong">❌ ${messages[event.error] || "Speech recognition failed. Please try again."}</div>`
-}
-speechRec.start()
-}
+    function chineseVoice(){
+      const voices = speechSynthesis.getVoices()
+      return voices.find(v => /^zh[-_]CN$/i.test(v.lang)) || voices.find(v => /^zh/i.test(v.lang)) || null
+    }
 
-//判断朗读是否正确
-function normalizeChinese(text){
-return text.normalize("NFKC").replace(/[\s，。！？、,.!?；;：:]/g, "")
-}
+    function speakWord(){
+      speakText(chapters[chapterIndex].word)
+    }
 
-function judgePronunciation(recognizedAlternatives){
-const feedDom = document.getElementById("feedbackBlock")
-const alternatives = Array.isArray(recognizedAlternatives) ? recognizedAlternatives : [recognizedAlternatives]
-const target = normalizeChinese(targetChineseWord)
-const matched = alternatives.some(text => normalizeChinese(text) === target)
-const userInputText = alternatives[0] || ""
-if(matched){
-feedDom.innerHTML = `<div class="box‑right">✅ Excellent! Your pronunciation is accurate. The next page of the mystery story has been unlocked.</div>`
-document.getElementById("unlockNextBtn").style.display = "inline‑block"
-}else{
-feedDom.innerHTML = `<div class="box‑wrong">❌ Recognized you read: ${userInputText}<br>Required word：${targetChineseWord} （${targetPinYin}）<br>Listen to the audio and read it once more.</div>`
-//读错自动重播标准发音
-setTimeout(()=>{playStandardVoice()}, 750)
-}
-}
+    function speakText(text){
+      if(!("speechSynthesis" in window)) return showFeedback("error","Speech is unavailable","Please try Chrome, Edge, or Safari.")
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.lang = "zh-CN"; utterance.rate = .72; utterance.pitch = 1
+      const voice = chineseVoice(); if(voice) utterance.voice = voice
+      speechSynthesis.cancel(); speechSynthesis.resume(); speechSynthesis.speak(utterance)
+    }
 
-//解锁第二页，加载后续小说剧情
-function openPageTwo(){
-document.querySelector(".wrapper").innerHTML = page2Html
-}
-</script>
+    async function toggleRecording(){
+      if(mediaRecorder?.state === "recording") return stopRecording()
+      if(!navigator.mediaDevices?.getUserMedia || !("MediaRecorder" in window)){
+        return showFeedback("error","Recording is unavailable","Open the published HTTPS page in a current version of Chrome or Edge.")
+      }
+      try{
+        mediaStream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})
+        audioChunks = []; recognition = null; recognitionFinished = false
+        const session = ++recordingSession
+        mediaRecorder = new MediaRecorder(mediaStream)
+        mediaRecorder.ondataavailable = event => { if(event.data.size) audioChunks.push(event.data) }
+        mediaRecorder.onstop = () => { if(session === recordingSession) saveRecording() }
+        mediaRecorder.start()
+        startRecognition()
+        const button = document.getElementById("recordBtn")
+        button.classList.add("active"); button.textContent = "■ Stop recording"
+        showFeedback("listening","Listening…",`Say “${chapters[chapterIndex].word}” clearly. Recording will stop automatically.`)
+        recordingTimeout = window.setTimeout(() => { if(session === recordingSession && mediaRecorder?.state === "recording") stopRecording() }, 6000)
+      }catch(error){
+        showFeedback("error","Microphone access is needed","Allow microphone permission in the browser address bar, then try again.")
+      }
+    }
+
+    function startRecognition(){
+      const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition
+      if(!Recognition){
+        showFeedback("listening","Recording your voice","Automatic Chinese checking is unavailable in this browser, but you can replay and compare your recording.")
+        return
+      }
+      recognition = new Recognition()
+      recognition.lang = "zh-CN"; recognition.interimResults = false; recognition.continuous = false; recognition.maxAlternatives = 5
+      recognition.onresult = event => {
+        recognitionFinished = true
+        const choices = Array.from(event.results[0]).map(item => ({text:item.transcript,confidence:item.confidence}))
+        judgePronunciation(choices)
+        if(mediaRecorder?.state === "recording") stopRecording()
+      }
+      recognition.onerror = event => {
+        recognitionFinished = true
+        if(event.error !== "aborted") showFeedback("error","We could not understand that","Move closer to the microphone, reduce background noise, and try once more.")
+      }
+      recognition.onnomatch = () => {
+        recognitionFinished = true
+        showFeedback("error","We could not match the word","Listen once more, then repeat the two syllables clearly.")
+      }
+      recognition.onend = () => {
+        if(!recognitionFinished){
+          recognitionFinished = true
+          showFeedback("error","No word was detected","Try again and begin speaking just after the recording indicator appears.")
+        }
+      }
+      try{ recognition.start() }catch(error){}
+    }
+
+    function stopRecording(){
+      if(recordingTimeout){ clearTimeout(recordingTimeout); recordingTimeout=null }
+      if(mediaRecorder?.state === "recording") mediaRecorder.stop()
+      try{ if(recognition && !recognitionFinished) recognition.stop() }catch(error){}
+      document.getElementById("recordBtn")?.classList.remove("active")
+      if(document.getElementById("recordBtn")) document.getElementById("recordBtn").textContent = "🎙 Try again"
+    }
+
+    function saveRecording(){
+      const type = mediaRecorder.mimeType || "audio/webm"
+      if(recordingUrl) URL.revokeObjectURL(recordingUrl)
+      recordingUrl = URL.createObjectURL(new Blob(audioChunks,{type}))
+      const playbackButton = document.getElementById("playbackBtn")
+      if(playbackButton) playbackButton.disabled = false
+      mediaStream?.getTracks().forEach(track => track.stop()); mediaStream = null
+      if(!recognition && !recognitionFinished){
+        showFeedback("success","Practice recorded","Play your recording, compare it with the example, and repeat it if you want another try.")
+        const continueButton = document.getElementById("continueBtn")
+        continueButton.textContent = "I practiced it — complete mission ✓"
+        continueButton.classList.add("show")
+      }
+    }
+
+    function playRecording(){ if(recordingUrl) new Audio(recordingUrl).play() }
+    function normalizeChinese(value){ return value.normalize("NFKC").replace(/[\s，。！？、,.!?；;：:]/g,"") }
+
+    function judgePronunciation(choices){
+      const target = normalizeChinese(chapters[chapterIndex].word)
+      const match = choices.find(choice => normalizeChinese(choice.text) === target)
+      if(match){
+        const confidence = match.confidence > 0 ? ` Recognition confidence: ${Math.round(match.confidence * 100)}%.` : ""
+        showFeedback("success","Great work!",`The browser heard the correct word.${confidence}<div class="recognized">Heard: ${escapeHtml(choices[0].text)}</div>`)
+        document.getElementById("continueBtn").classList.add("show")
+      }else{
+        showFeedback("error","Almost—try once more",`The browser heard something different. Listen again, slow down, and copy the tone movement.<div class="recognized">Heard: ${escapeHtml(choices[0]?.text || "nothing")}</div>`)
+      }
+    }
+
+    function showFeedback(kind,title,message){
+      const box = document.getElementById("feedback"); if(!box) return
+      box.className = `feedback ${kind}`; box.innerHTML = `<strong>${title}</strong>${message}`
+    }
+    function escapeHtml(value){ const div=document.createElement("div"); div.textContent=value; return div.innerHTML }
+
+    function nextChapter(){
+      cleanupAudio()
+      completedMissions = Math.max(completedMissions,chapterIndex + 1)
+      localStorage.setItem("linguaCompleted",completedMissions)
+      if(chapterIndex < chapters.length - 1){ chapterIndex++; localStorage.setItem("linguaChapter",chapterIndex); render(); window.scrollTo({top:0,behavior:"smooth"}) }
+      else showCompletion()
+    }
+    function cleanupAudio(){
+      recordingSession++
+      if(recordingTimeout){clearTimeout(recordingTimeout);recordingTimeout=null}
+      try{if(mediaRecorder?.state === "recording") mediaRecorder.stop()}catch(error){}
+      try{recognition?.abort()}catch(error){}
+      mediaStream?.getTracks().forEach(track=>track.stop())
+      mediaStream=null; mediaRecorder=null; recognition=null
+      if(recordingUrl){URL.revokeObjectURL(recordingUrl);recordingUrl=""}
+      if("speechSynthesis" in window) speechSynthesis.cancel()
+    }
+    function showCompletion(){
+      localStorage.removeItem("linguaChapter"); document.getElementById("progressText").textContent="Story complete"; document.getElementById("progressBar").style.width="100%"
+      document.getElementById("app").innerHTML=`<div class="complete"><div class="seal">🏮</div><p class="eyebrow">All missions complete</p><h2>You unlocked the mystery!</h2><p>You learned six Chinese words across two story levels.<br>Your next adventure is waiting at Cloud Castle.</p><button class="btn restart" id="restartBtn">Back to my missions</button></div>`
+      document.getElementById("restartBtn").addEventListener("click",renderHome)
+    }
+
+    window.addEventListener("beforeunload",cleanupAudio)
+    document.getElementById("homeBtn").addEventListener("click",renderHome)
+    renderHome()
+  </script>
 </body>
 </html>
