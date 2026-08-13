@@ -100,6 +100,7 @@
     let reviewMistakes=0
     let reviewFirstTry=true
     let reviewIsDaily=false
+    let reviewReturn="track"
     let reviewSession=null
     try{reviewSession=JSON.parse(localStorage.getItem("linguaReviewSession")||"null")}catch(error){reviewSession=null}
     let sentenceItems=[]
@@ -165,7 +166,7 @@
           <div class="home-progress-copy"><strong>${totalDone?`${totalDone} lessons complete` : "Start your first lesson"}</strong><span>${percent}% of Beginner Foundations</span><div class="home-progress-track"><div class="home-progress-fill" style="width:${percent}%"></div></div></div>
         </div>
         <div class="backup-row"><button class="btn playback" id="backupBtn" type="button">💾 Export progress</button><button class="btn playback" id="restoreBtn" type="button">📥 Import progress</button><input type="file" id="restoreFile" accept="application/json" style="display:none"></div>
-        <p class="privacy-note">🔒 <strong>Your data stays on this device.</strong> Microphone audio is processed by this device and your browser’s speech service to check what you said, then discarded — it is never uploaded by Lingua Pages. Progress is saved in this browser’s storage and can be exported or imported with the buttons above.</p>
+        <p class="privacy-note">🔒 <strong>Your data stays on this device.</strong> Microphone audio is processed by this device and your browser’s speech service to check what you said, then discarded — it is never uploaded by Lingua Pages. Progress is saved in this browser’s storage and can be exported or imported with the buttons above. Speech recognition may use your browser or operating system provider's online speech service, and that provider's behavior is outside Lingua Pages' control.</p>
         `
       document.getElementById("storiesPath").addEventListener("click",renderStoryTracks)
       document.getElementById("vocabPath").addEventListener("click",renderVocabularyLab)
@@ -188,7 +189,9 @@
       const reader=new FileReader()
       reader.onload=()=>{try{
         const data=JSON.parse(reader.result)
-        Object.keys(data).forEach(key=>{if(key.indexOf("lingua")===0)localStorage.setItem(key,data[key])})
+        if(!data || Array.isArray(data) || typeof data!=="object" || file.size>1000000) throw new Error("Invalid backup")
+        const allowed=new Set(["linguaActiveTrack","linguaChapter","linguaLessonPhase","linguaBeatIndex","linguaTrackProgress","linguaCompleted","linguaComicsCompleted","linguaReviewSchedule","linguaReviewCorrect","linguaReviewSession"])
+        Object.keys(data).forEach(key=>{if(allowed.has(key)&&typeof data[key]==="string")localStorage.setItem(key,data[key])})
         location.reload()
       }catch(error){
         window.alert("That file could not be read as a Lingua Pages backup.")
@@ -212,7 +215,8 @@
       document.getElementById("app").innerHTML=`<button class="section-back" id="labHome">← Home</button><section class="comic-library-head"><p class="eyebrow">Practice center</p><h1>Vocabulary Lab</h1><p>${learned.length} learned word${learned.length===1?"":"s"}</p></section><nav class="lab-tabs"><button class="lab-tab" id="wordBankTab">Word bank</button><button class="lab-tab" id="meaningGameTab" ${learned.length?"":"disabled"}>Meaning game</button><button class="lab-tab" id="sentenceTab">Build sentences</button></nav><div id="labContent"></div>`
       document.getElementById("labHome").addEventListener("click",renderHome)
       document.getElementById("wordBankTab").addEventListener("click",renderWordBank)
-      document.getElementById("meaningGameTab").addEventListener("click",()=>startReview(learnedRecords().map(item=>item.lesson),true))
+      document.getElementById("meaningGameTab").addEventListener("click",()=>startReview(learnedRecords().map(item=>item.lesson),false,"lab"))
+      document.getElementById("sentenceTab").disabled=!learned.length
       document.getElementById("sentenceTab").addEventListener("click",startSentenceGame)
       renderWordBank()
       focusHeading()
@@ -229,7 +233,7 @@
     function startSentenceGame(){
       const learnedWords=new Set(learnedRecords().map(item=>item.lesson.word))
       sentenceItems=sentencePractice.filter(item=>learnedWords.has(item.word))
-      if(!sentenceItems.length) sentenceItems=sentencePractice.slice(0,3)
+      if(!sentenceItems.length) return renderWordBank()
       sentenceIndex=0
       prepareSentenceRound()
     }
@@ -275,7 +279,6 @@
       cleanupAudio()
       document.getElementById("homeBtn").style.display="inline-block"
       document.getElementById("headerProgress").style.display="none"
-      const totalDone=storyTracks.reduce((sum,track)=>sum+Number(trackProgress[track.id]||0),0)
       document.getElementById("app").innerHTML=`<button class="section-back" id="tracksBack">← Home</button><section class="comic-library-head"><p class="eyebrow">Beginner Foundations</p><h1>Choose a story</h1></section><section class="comic-grid">${storyTracks.map(track=>{const done=Number(trackProgress[track.id]||0);const guide=trackGuides[track.id];return `<article class="comic-cover"><div class="cover-art" aria-hidden="true">${guideAvatar(guide,trackAvatarColors[track.id],false)}</div><h3>${track.title}</h3><p>${track.description}<br><strong>${done}/${track.lessons.length} complete</strong></p><button class="comic-open track-open" data-track="${track.id}">${done?done===track.lessons.length?"Review":"Continue":"Start"}</button></article>`}).join("")}</section>`
       document.getElementById("tracksBack").addEventListener("click",renderHome)
       document.querySelectorAll(".track-open").forEach(button=>button.addEventListener("click",()=>selectTrack(button.dataset.track)))
@@ -298,7 +301,7 @@
       const icons=["🌱","🎧","💬","⭐","🎀","🏆"]
       document.getElementById("homeBtn").style.display="inline-block"
       document.getElementById("headerProgress").style.display="none"
-      document.getElementById("app").innerHTML=`<button class="section-back" id="allTracks">← Stories</button><section class="comic-library-head"><p class="eyebrow">${track.icon} Story Track</p><h1>${track.title}</h1></section><div class="guide-bubble">${guideAvatar(guide,trackAvatarColors[activeTrackId],true)}<p><strong>${guide.name}</strong>${guide.line}</p></div><section class="mission-grid">${chapters.map((chapter,index)=>{const complete=index<completedMissions;const unlocked=index<=completedMissions;return `<article class="mission-card ${unlocked?"":"locked"}"><div class="mission-number">Lesson ${index+1}</div><div class="mission-icon">${unlocked?icons[index]:"🔒"}</div><h3>${chapter.title}</h3><p><span lang="zh-CN">${chapter.word}</span> · ${chapter.meaning}</p><div class="mission-status"><span class="stars">${complete?"★":"☆"}</span><button class="mission-start track-lesson" data-mission="${index}" ${unlocked?"":"disabled"}>${complete?"Practice":unlocked?"Start":"Locked"}</button></div></article>`}).join("")}</section>${completedMissions===chapters.length?`<button class="btn continue show" id="trackReview">⭐ Review</button>`:""}`
+      document.getElementById("app").innerHTML=`<button class="section-back" id="allTracks">← Stories</button><section class="comic-library-head"><p class="eyebrow">${track.icon} Story Track</p><h1>${track.title}</h1></section><div class="guide-bubble">${guideAvatar(guide,trackAvatarColors[activeTrackId],true)}<p><strong>${guide.name}</strong>${guide.line}</p></div><section class="mission-grid">${chapters.map((chapter,index)=>{const complete=index<completedMissions;const unlocked=index<=completedMissions;return `<article class="mission-card ${unlocked?"":"locked"}"><div class="mission-number">Lesson ${index+1}</div><div class="mission-icon">${unlocked?icons[index]:"🔒"}</div><h3>${chapter.title}</h3><p>${complete?`<span lang="zh-CN">${chapter.word}</span> · ${chapter.meaning}`:"New language unlocks after the scene"}</p><div class="mission-status"><span class="stars">${complete?"★":"☆"}</span><button class="mission-start track-lesson" data-mission="${index}" ${unlocked?"":"disabled"}>${complete?"Practice":unlocked?"Start":"Locked"}</button></div></article>`}).join("")}</section>${completedMissions===chapters.length?`<button class="btn continue show" id="trackReview">⭐ Review</button>`:""}`
       document.getElementById("allTracks").addEventListener("click",renderStoryTracks)
       document.querySelectorAll(".track-lesson:not(:disabled)").forEach(button=>button.addEventListener("click",()=>startMission(Number(button.dataset.mission))))
       document.getElementById("trackReview")?.addEventListener("click",()=>startReview(chapters))
@@ -471,18 +474,21 @@
             <div class="coach-title">Pronunciation coach</div><p class="tip">${chapter.tip}</p>
             <div class="feedback" id="feedback" role="status" aria-live="polite"><strong>Ready when you are</strong>Listen first, then record yourself. Your browser checks what it transcribed — a transcription check, not a pronunciation grade.</div>
             <button class="btn continue" id="continueBtn" type="button">Continue the story →</button>
+            <button class="btn playback" id="reviewLaterBtn" type="button" style="margin-top:10px;width:100%">Review later</button>
           </div>
         </section>
-        <p class="browser-note">For best results, use Chrome or Edge on an HTTPS page and allow microphone access. Recordings are processed on this device, checked by your browser’s speech service, and discarded when you leave the page.</p>`
+        <p class="browser-note">For best results, use Chrome or Edge on an HTTPS page and allow microphone access. Recordings are processed on this device, checked by your browser’s speech service, and discarded when you leave the page. Your browser's speech recognition may use an online service provided by your browser or operating system vendor; that provider's behavior is outside Lingua Pages' control.</p>`
       document.getElementById("speakBtn").addEventListener("click", speakWord)
       document.getElementById("slowBtn").addEventListener("click",()=>speakText(chapter.word,.52))
       document.getElementById("recordBtn").addEventListener("click", toggleRecording)
       document.getElementById("playbackBtn").addEventListener("click", playRecording)
       document.getElementById("compareBtn").addEventListener("click", playCompare)
-      document.getElementById("contextBtn").addEventListener("click",()=>document.getElementById("contextCard").classList.toggle("show"))
+      document.getElementById("contextBtn").setAttribute("aria-expanded","false")
+      document.getElementById("contextBtn").addEventListener("click",event=>{const card=document.getElementById("contextCard");const shown=card.classList.toggle("show");event.currentTarget.setAttribute("aria-expanded",String(shown))})
       document.getElementById("contextSpeak").addEventListener("click",()=>speakText(lessonExamples[chapter.word]||chapter.word,.75))
       document.querySelectorAll(".syllable-chip").forEach(button=>button.addEventListener("click",()=>speakText(syllablesOf(chapter.word,chapter.pinyin)[Number(button.dataset.syl)].char,.72)))
       document.getElementById("continueBtn").addEventListener("click", nextChapter)
+      document.getElementById("reviewLaterBtn").addEventListener("click",nextChapter)
       focusHeading()
     }
 
@@ -508,7 +514,7 @@
     async function toggleRecording(){
       if(mediaRecorder?.state === "recording") return stopRecording()
       if(!navigator.mediaDevices?.getUserMedia || !("MediaRecorder" in window)){
-        return showFeedback("error","Recording is unavailable","Open the published HTTPS page in a current version of Chrome or Edge.")
+        return showFeedback("error","Recording is unavailable","Use your device recorder for self-review, play the slow model, or choose Review later. On iPhone, Voice Memos provides a reliable fallback.")
       }
       try{
         mediaStream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})
@@ -524,7 +530,7 @@
         showFeedback("listening","Listening…",`Say “${chapters[chapterIndex].word}” clearly. Recording will stop automatically.`)
         recordingTimeout = window.setTimeout(() => { if(session === recordingSession && mediaRecorder?.state === "recording") stopRecording() }, 6000)
       }catch(error){
-        showFeedback("error","Microphone access is needed","Allow microphone permission in the browser address bar, then try again.")
+        showFeedback("error","Microphone access is needed","Allow microphone access and retry, or use your device recorder for self-review and choose Review later.")
       }
     }
 
@@ -544,16 +550,16 @@
       }
       recognition.onerror = event => {
         recognitionFinished = true
-        if(event.error !== "aborted") showFeedback("error","We could not understand that","Move closer to the microphone, reduce background noise, and try once more.")
+        if(event.error !== "aborted") registerRecognitionFailure("We could not understand that","Move closer to the microphone, reduce background noise, and try once more.")
       }
       recognition.onnomatch = () => {
         recognitionFinished = true
-        showFeedback("error","We could not match the word","Listen once more, then repeat the two syllables clearly.")
+        registerRecognitionFailure("We could not match the word","Listen once more, then repeat each syllable clearly.")
       }
       recognition.onend = () => {
         if(!recognitionFinished){
           recognitionFinished = true
-          showFeedback("error","No word was detected","Try again and begin speaking just after the recording indicator appears.")
+          registerRecognitionFailure("No word was detected","Try again and begin speaking just after the recording indicator appears.")
         }
       }
       try{ recognition.start() }catch(error){}
@@ -588,6 +594,13 @@
     function playCompare(){
       if(!recordingUrl) return
       speakText(chapters[chapterIndex].word,.72,()=>window.setTimeout(()=>playRecording(),220))
+    }
+    function registerRecognitionFailure(title,message){
+      pronunciationAttempts++
+      const canContinue=pronunciationAttempts>=2
+      const chapter=chapters[chapterIndex]
+      showFeedback("error",canContinue?"Review and decide":title,`${message}<div class="recognized">Target: <span lang="zh-CN">${chapter.word}</span> · ${chapter.pinyin}</div>${canContinue?"Automatic transcription can be unreliable. Retry, compare recordings, or continue and review later.":""}`)
+      if(canContinue){const button=document.getElementById("continueBtn");if(button){button.textContent="Continue · review later →";button.classList.add("show")}scheduleLessonReview(activeTrackId,chapterIndex)}
     }
     function normalizeChinese(value){ return String(value||"").normalize("NFKC").toLowerCase().replace(/[\s，。！？、,.!?；;：:'“”\-]/g,"").replace(/3/g,"三") }
 
@@ -634,7 +647,7 @@
     function scheduleLessonReview(trackId,index){
       const key=`${trackId}-${index}`
       const old=reviewSchedule[key]||{strength:0}
-      reviewSchedule[key]={strength:old.strength,dueAt:Date.now()+86400000}
+      reviewSchedule[key]={...old,strength:Number(old.strength||0),dueAt:Date.now()+86400000}
       localStorage.setItem("linguaReviewSchedule",JSON.stringify(reviewSchedule))
     }
 
@@ -659,11 +672,11 @@
       localStorage.setItem("linguaReviewCorrect",String(Number(localStorage.getItem("linguaReviewCorrect")||0)+1))
     }
 
-    function startReview(sourceLessons,isDaily=false){
+    function startReview(sourceLessons,isDaily=false,returnTo=isDaily?"home":"track"){
       cleanupAudio()
       const records=allLessonRecords()
       reviewItems=sourceLessons.map(lesson=>{const record=records.find(item=>item.lesson===lesson)||records.find(item=>item.lesson.word===lesson.word);return record?{...record,requeued:false,missed:false}:null}).filter(Boolean)
-      reviewIndex=0;reviewScore=0;reviewMistakes=0;reviewFirstTry=true;reviewIsDaily=!!isDaily
+      reviewIndex=0;reviewScore=0;reviewMistakes=0;reviewFirstTry=true;reviewIsDaily=!!isDaily;reviewReturn=returnTo
       document.getElementById("homeBtn").style.display="inline-block"
       saveReviewSession()
       renderReviewQuestion(isDaily)
@@ -705,8 +718,8 @@
     function finishReview(isDaily){
       clearReviewSession()
       document.getElementById("headerProgress").style.display="none"
-      document.getElementById("app").innerHTML=`<div class="complete"><div class="seal">${reviewMistakes?"🌱":"🏆"}</div><p class="eyebrow">Review complete</p><h2>${reviewMistakes?"Mistakes make memories stronger":"Perfect review!"}</h2><p>You corrected every word${reviewMistakes?` and practiced ${reviewMistakes} extra time${reviewMistakes===1?"":"s"}`:" on the first try"}.<br>These words will return later for spaced practice.</p><button class="btn restart" id="reviewDone">${isDaily?"Back Home":"Back to this track"}</button></div>`
-      document.getElementById("reviewDone").addEventListener("click",isDaily?renderHome:renderTrack)
+      document.getElementById("app").innerHTML=`<div class="complete"><div class="seal">${reviewMistakes?"🌱":"🏆"}</div><p class="eyebrow">Review complete</p><h2>${reviewMistakes?"Mistakes make memories stronger":"Perfect review!"}</h2><p>You corrected every word${reviewMistakes?` and practiced ${reviewMistakes} extra time${reviewMistakes===1?"":"s"}`:" on the first try"}.<br>These words will return later for spaced practice.</p><button class="btn restart" id="reviewDone">${reviewReturn==="lab"?"Back to Vocabulary Lab":reviewReturn==="home"?"Back Home":"Back to this track"}</button></div>`
+      document.getElementById("reviewDone").addEventListener("click",reviewReturn==="lab"?renderVocabularyLab:reviewReturn==="home"?renderHome:renderTrack)
       focusHeading()
     }
 
@@ -717,7 +730,7 @@
     function saveReviewSession(){
       localStorage.setItem("linguaReviewSession",JSON.stringify({
         items:reviewItems.map(item=>({key:item.key,requeued:!!item.requeued,missed:!!item.missed})),
-        index:reviewIndex,score:reviewScore,mistakes:reviewMistakes,firstTry:reviewFirstTry,isDaily:reviewIsDaily
+        index:reviewIndex,score:reviewScore,mistakes:reviewMistakes,firstTry:reviewFirstTry,isDaily:reviewIsDaily,returnTo:reviewReturn
       }))
     }
     function clearReviewSession(){ localStorage.removeItem("linguaReviewSession") }
@@ -732,6 +745,7 @@
       reviewMistakes=Number(reviewSession.mistakes||0)
       reviewFirstTry=!!reviewSession.firstTry
       reviewIsDaily=!!reviewSession.isDaily
+      reviewReturn=["home","lab","track"].includes(reviewSession.returnTo)?reviewSession.returnTo:(reviewIsDaily?"home":"track")
       return true
     }
 
