@@ -157,6 +157,13 @@
     let recognitionFinished = false
     let recordingTimeout = null
     let recordingSession = 0
+    let reviewSchedule = {}
+    try{reviewSchedule=JSON.parse(localStorage.getItem("linguaReviewSchedule")||"{}")}catch(error){reviewSchedule={}}
+    let reviewItems=[]
+    let reviewIndex=0
+    let reviewScore=0
+    let reviewMistakes=0
+    let reviewFirstTry=true
 
     function renderHome(){
       cleanupAudio()
@@ -164,6 +171,7 @@
       document.getElementById("headerProgress").style.display = "none"
       const percent = Math.round((completedMissions / chapters.length) * 100)
       const icons = ["🏡","🔐","🪞","🌙","🗝️","🌸"]
+      const dueCount = getDueReviewItems().length
       document.getElementById("app").innerHTML = `
         <section class="home-hero">
           <div class="hero-badge">🌸 Chinese, one story at a time</div>
@@ -174,6 +182,7 @@
         <section class="path-picker" aria-label="Choose a learning path">
           <button class="path-card" id="storiesPath"><div>📖 ✨</div><strong>Story Missions</strong><span>${completedMissions}/${chapters.length} chapters complete</span></button>
           <button class="path-card comic" id="comicsPath"><div>💬 🎀</div><strong>Comic Library</strong><span>${completedComics}/${comics.length} episodes complete</span></button>
+          ${dueCount?`<button class="path-card" id="reviewPath"><div>🧠 ⭐</div><strong>Daily Review</strong><span>${dueCount} word${dueCount===1?"":"s"} ready to practice</span></button>`:""}
         </section>
         <div class="home-progress">
           <div class="flower">🌷</div>
@@ -195,6 +204,7 @@
       document.querySelectorAll(".mission-start:not(:disabled)").forEach(button => button.addEventListener("click",() => startMission(Number(button.dataset.mission))))
       document.getElementById("storiesPath").addEventListener("click",renderStoryTracks)
       document.getElementById("comicsPath").addEventListener("click",renderComicLibrary)
+      document.getElementById("reviewPath")?.addEventListener("click",()=>startReview(getDueReviewItems().map(item=>item.lesson),true))
     }
 
     function renderStoryTracks(){
@@ -291,7 +301,7 @@
       document.getElementById("progressText").textContent = `Chapter ${chapterIndex + 1} of ${chapters.length}`
       document.getElementById("progressBar").style.width = `${((chapterIndex + 1) / chapters.length) * 100}%`
       document.getElementById("app").innerHTML = `
-        <p class="eyebrow">Chapter ${chapterIndex + 1} · The Old Bookstore</p>
+        <p class="eyebrow">Lesson ${chapterIndex + 1} · ${storyTracks.find(track=>track.id===activeTrackId).title}</p>
         <h1>${chapter.title}</h1>
         <section class="story"><p>${chapter.story}</p><p class="mystery">${chapter.mystery}</p></section>
         <section class="lesson">
@@ -432,12 +442,85 @@
     }
     function escapeHtml(value){ const div=document.createElement("div"); div.textContent=value; return div.innerHTML }
 
+    function allLessonRecords(){
+      return storyTracks.flatMap(track=>track.lessons.map((lesson,index)=>({lesson,key:`${track.id}-${index}`,trackId:track.id,index})))
+    }
+
+    function scheduleLessonReview(trackId,index){
+      const key=`${trackId}-${index}`
+      const old=reviewSchedule[key]||{strength:0}
+      reviewSchedule[key]={strength:old.strength,dueAt:Date.now()+86400000}
+      localStorage.setItem("linguaReviewSchedule",JSON.stringify(reviewSchedule))
+    }
+
+    function getDueReviewItems(){
+      const records=allLessonRecords()
+      return records.filter(record=>reviewSchedule[record.key]?.dueAt<=Date.now())
+    }
+
+    function updateReviewStrength(key,correct){
+      const card=reviewSchedule[key]||{strength:0,dueAt:0}
+      card.strength=correct?Math.min(card.strength+1,4):0
+      const days=[1,3,7,14,30][card.strength]
+      card.dueAt=Date.now()+days*86400000
+      reviewSchedule[key]=card
+      localStorage.setItem("linguaReviewSchedule",JSON.stringify(reviewSchedule))
+    }
+
+    function startReview(sourceLessons,isDaily=false){
+      cleanupAudio()
+      const records=allLessonRecords()
+      reviewItems=sourceLessons.map(lesson=>{const record=records.find(item=>item.lesson===lesson)||records.find(item=>item.lesson.word===lesson.word);return {...record,requeued:false,missed:false}})
+      reviewIndex=0;reviewScore=0;reviewMistakes=0;reviewFirstTry=true
+      document.getElementById("homeBtn").style.display="inline-block"
+      renderReviewQuestion(isDaily)
+    }
+
+    function renderReviewQuestion(isDaily=false){
+      if(reviewIndex>=reviewItems.length) return finishReview(isDaily)
+      const item=reviewItems[reviewIndex]
+      const pool=[...new Set(allLessonRecords().map(record=>record.lesson.meaning).filter(value=>value!==item.lesson.meaning))]
+      const choices=[item.lesson.meaning,...pool.sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5)
+      document.getElementById("headerProgress").style.display="block"
+      document.getElementById("progressText").textContent=`Review ${reviewIndex+1} of ${reviewItems.length}`
+      document.getElementById("progressBar").style.width=`${((reviewIndex+1)/reviewItems.length)*100}%`
+      document.getElementById("app").innerHTML=`<button class="section-back" id="leaveReview">← Leave review</button><section class="comic-library-head"><p class="eyebrow">${isDaily?"Daily Review":"Level Checkpoint"}</p><h1>What does this word mean?</h1></section><div class="word-card" style="max-width:560px;margin:auto"><div class="hanzi" lang="zh-CN">${item.lesson.word}</div><div class="pinyin">${item.lesson.pinyin}</div><button class="btn speak" id="reviewSpeak" style="margin:14px auto">🔊 Hear it</button><div class="actions" id="reviewChoices">${choices.map(choice=>`<button class="btn playback review-choice" data-answer="${escapeHtml(choice)}">${escapeHtml(choice)}</button>`).join("")}</div><div class="feedback" id="feedback" role="status" aria-live="polite"><strong>Choose an answer</strong>Words you miss will return again before the review ends.</div></div>`
+      document.getElementById("leaveReview").addEventListener("click",renderHome)
+      document.getElementById("reviewSpeak").addEventListener("click",()=>speakText(item.lesson.word))
+      document.querySelectorAll(".review-choice").forEach(button=>button.addEventListener("click",()=>answerReview(button,item,isDaily)))
+    }
+
+    function answerReview(button,item,isDaily){
+      if(button.dataset.answer===item.lesson.meaning){
+        if(reviewFirstTry&&!item.requeued) reviewScore++
+        updateReviewStrength(item.key,true)
+        showFeedback("success","Correct!",`${item.lesson.word} means “${item.lesson.meaning}.”`)
+        reviewIndex++;reviewFirstTry=true
+        setTimeout(()=>renderReviewQuestion(isDaily),550)
+      }else{
+        reviewMistakes++;reviewFirstTry=false;item.missed=true
+        updateReviewStrength(item.key,false)
+        button.disabled=true
+        showFeedback("error","Not quite — try again",`Listen once more and use the pinyin clue. This word will return later in the review.`)
+        if(!item.requeued&&!reviewItems.some((queued,index)=>index>reviewIndex&&queued.key===item.key)) reviewItems.push({...item,requeued:true,missed:false})
+      }
+    }
+
+    function finishReview(isDaily){
+      document.getElementById("headerProgress").style.display="none"
+      document.getElementById("app").innerHTML=`<div class="complete"><div class="seal">${reviewMistakes?"🌱":"🏆"}</div><p class="eyebrow">Review complete</p><h2>${reviewMistakes?"Mistakes make memories stronger":"Perfect review!"}</h2><p>You corrected every word${reviewMistakes?` and practiced ${reviewMistakes} extra time${reviewMistakes===1?"":"s"}`:" on the first try"}.<br>These words will return later for spaced practice.</p><button class="btn restart" id="reviewDone">${isDaily?"Back Home":"Back to this track"}</button></div>`
+      document.getElementById("reviewDone").addEventListener("click",isDaily?renderHome:renderTrack)
+    }
+
     function nextChapter(){
       cleanupAudio()
       completedMissions = Math.max(completedMissions,chapterIndex + 1)
-      localStorage.setItem("linguaCompleted",completedMissions)
+      trackProgress[activeTrackId]=completedMissions
+      localStorage.setItem("linguaTrackProgress",JSON.stringify(trackProgress))
+      if(activeTrackId==="mystery") localStorage.setItem("linguaCompleted",completedMissions)
+      scheduleLessonReview(activeTrackId,chapterIndex)
       if(chapterIndex < chapters.length - 1){ chapterIndex++; localStorage.setItem("linguaChapter",chapterIndex); render(); window.scrollTo({top:0,behavior:"smooth"}) }
-      else showCompletion()
+      else startReview(chapters)
     }
     function cleanupAudio(){
       recordingSession++
