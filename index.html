@@ -56,7 +56,7 @@
   </div>
 
   <script>
-    const chapters = [
+    const mysteryChapters = [
       {
         title:"The Door Without a Sign",
         story:"Rain poured over the quiet street as Lila searched for her new apartment. Down a narrow alley, she found an old bookstore glowing with a dim amber light. There was no sign outside—only a worn wooden door left slightly open.",
@@ -116,9 +116,34 @@
         {scene:"🏮　☁️　⭐",zh:"加油！你可以！",py:"jiā yóu! nǐ kě yǐ!",en:"Keep going! You can do it!"}]}
     ]
 
+    const storyTracks = [
+      {id:"mystery",icon:"🔮",title:"Moonlit Mystery",description:"Unlock the secrets of an enchanted bookstore.",lessons:mysteryChapters},
+      {id:"cafe",icon:"🥮",title:"Mooncake Café",description:"Practice greetings, ordering, numbers, and everyday kindness.",lessons:[
+        {title:"A New Customer",story:"The bell chimed as Mei entered the Mooncake Café. The owner smiled and waited for her first words.",mystery:"Greet the owner to receive the secret menu.",word:"你好",pinyin:"nǐ hǎo",meaning:"hello",tip:"Let <strong>nǐ</strong> dip, then let <strong>hǎo</strong> dip and rise."},
+        {title:"Choose a Drink",story:"A tiny teapot floated above the counter. It would only pour for someone who named the drink politely.",mystery:"Order the tea to reveal a message at the bottom of the cup.",word:"茶",pinyin:"chá",meaning:"tea",tip:"Let <strong>chá</strong> rise, as if you are asking a friendly question."},
+        {title:"The Pink Box",story:"Three mooncakes glowed inside a pink box, but one belonged to a mysterious guest.",mystery:"Count the mooncakes before the box closes.",word:"三个",pinyin:"sān ge",meaning:"three items",tip:"Keep <strong>sān</strong> high and level; say <strong>ge</strong> lightly."},
+        {title:"A Thank-you Note",story:"The guest left a silver envelope for Mei. Inside was a note and a tiny café key.",mystery:"Say thank you to complete the café story.",word:"谢谢",pinyin:"xiè xie",meaning:"thank you",tip:"Drop the first <strong>xiè</strong> clearly and keep the second one light."}]},
+      {id:"school",icon:"🌟",title:"Starlight School",description:"Meet friends and talk about class, plans, and feelings.",lessons:[
+        {title:"Meet the Class",story:"At Starlight School, Lan waved from the doorway and introduced herself to the new student.",mystery:"Name a friend to join the class adventure.",word:"朋友",pinyin:"péng you",meaning:"friend",tip:"Let <strong>péng</strong> rise; keep <strong>you</strong> soft and light."},
+        {title:"The Lost Book",story:"A glowing book vanished from the teacher’s desk. A trail of stars led toward a backpack.",mystery:"Name the missing object to follow the clue.",word:"书",pinyin:"shū",meaning:"book",tip:"Keep <strong>shū</strong> high, smooth, and level."},
+        {title:"After School",story:"The friends found a note inviting them to meet again the next day beneath the clock tower.",mystery:"Say when the next clue will appear.",word:"明天",pinyin:"míng tiān",meaning:"tomorrow",tip:"Let <strong>míng</strong> rise, then keep <strong>tiān</strong> high and level."},
+        {title:"The Happy Star",story:"The clock tower opened and a smiling star floated into Lan’s hands.",mystery:"Describe how Lan feels to earn the star badge.",word:"高兴",pinyin:"gāo xìng",meaning:"happy",tip:"Keep <strong>gāo</strong> high, then drop <strong>xìng</strong> firmly."}]},
+      {id:"postcards",icon:"🐼",title:"Panda Postcards",description:"Explore family, places, colors, and weather with Bao.",lessons:[
+        {title:"Postcard from Home",story:"Bao the panda found a blank postcard beside a family photograph.",mystery:"Name home to begin Bao’s journey.",word:"家",pinyin:"jiā",meaning:"home",tip:"Keep <strong>jiā</strong> high and level."},
+        {title:"Find the Park",story:"Bao followed a painted map, but the path split beside a bamboo gate.",mystery:"Ask where the park is to choose the right path.",word:"哪里",pinyin:"nǎ lǐ",meaning:"where",tip:"Both syllables dip; keep the second one gentle in natural speech."},
+        {title:"The Red Kite",story:"At the market, dozens of kites danced overhead. One carried Bao’s next postcard.",mystery:"Name its color before it flies away.",word:"红色",pinyin:"hóng sè",meaning:"red",tip:"Let <strong>hóng</strong> rise, then drop <strong>sè</strong>."},
+        {title:"Rainy Adventure",story:"Dark clouds gathered as Bao reached the river. The final postcard appeared in a raindrop.",mystery:"Name the weather to finish the journey.",word:"下雨",pinyin:"xià yǔ",meaning:"to rain",tip:"Drop <strong>xià</strong>, then let <strong>yǔ</strong> dip and rise."}]}
+    ]
+
+    let activeTrackId = localStorage.getItem("linguaActiveTrack") || "mystery"
+    let chapters = storyTracks.find(track=>track.id===activeTrackId)?.lessons || mysteryChapters
+
     let chapterIndex = Number(localStorage.getItem("linguaChapter") || 0)
     if(chapterIndex < 0 || chapterIndex >= chapters.length) chapterIndex = 0
-    let completedMissions = Number(localStorage.getItem("linguaCompleted") || 0)
+    let trackProgress = {}
+    try{ trackProgress=JSON.parse(localStorage.getItem("linguaTrackProgress")||"{}") }catch(error){ trackProgress={} }
+    if(!Object.keys(trackProgress).length) trackProgress.mystery=Number(localStorage.getItem("linguaCompleted")||0)
+    let completedMissions = Number(trackProgress[activeTrackId] || 0)
     if(completedMissions < 0 || completedMissions > chapters.length) completedMissions = 0
     let completedComics = Number(localStorage.getItem("linguaComicsCompleted") || 0)
     if(completedComics < 0 || completedComics > comics.length) completedComics = 0
@@ -168,8 +193,39 @@
         </section>
         <p class="daily-note">🎀 Tip: short daily practice helps new sounds stick.</p>`
       document.querySelectorAll(".mission-start:not(:disabled)").forEach(button => button.addEventListener("click",() => startMission(Number(button.dataset.mission))))
-      document.getElementById("storiesPath").addEventListener("click",()=>document.getElementById("storyMissions").scrollIntoView({behavior:"smooth"}))
+      document.getElementById("storiesPath").addEventListener("click",renderStoryTracks)
       document.getElementById("comicsPath").addEventListener("click",renderComicLibrary)
+    }
+
+    function renderStoryTracks(){
+      cleanupAudio()
+      document.getElementById("homeBtn").style.display="inline-block"
+      document.getElementById("headerProgress").style.display="none"
+      const totalDone=storyTracks.reduce((sum,track)=>sum+Number(trackProgress[track.id]||0),0)
+      document.getElementById("app").innerHTML=`<button class="section-back" id="tracksBack">← Back to Home</button><section class="comic-library-head"><p class="eyebrow">Beginner Foundations</p><h1>Choose a story track</h1><p>Each original adventure teaches useful Chinese through short lessons, speaking practice, and a review challenge.</p></section><section class="comic-grid">${storyTracks.map(track=>{const done=Number(trackProgress[track.id]||0);return `<article class="comic-cover"><div class="cover-art" aria-hidden="true">${track.icon}</div><h3>${track.title}</h3><p>${track.description}<br><strong>${done}/${track.lessons.length} lessons complete</strong></p><button class="comic-open track-open" data-track="${track.id}">${done?done===track.lessons.length?"Review track":"Continue":"Start track"}</button></article>`}).join("")}</section><p class="daily-note">${totalDone} lessons completed across all tracks</p>`
+      document.getElementById("tracksBack").addEventListener("click",renderHome)
+      document.querySelectorAll(".track-open").forEach(button=>button.addEventListener("click",()=>selectTrack(button.dataset.track)))
+    }
+
+    function selectTrack(trackId){
+      activeTrackId=trackId
+      const track=storyTracks.find(item=>item.id===trackId)
+      chapters=track.lessons
+      completedMissions=Number(trackProgress[trackId]||0)
+      chapterIndex=Math.min(completedMissions,chapters.length-1)
+      localStorage.setItem("linguaActiveTrack",trackId)
+      renderTrack()
+    }
+
+    function renderTrack(){
+      const track=storyTracks.find(item=>item.id===activeTrackId)
+      const icons=["🌱","🎧","💬","⭐","🎀","🏆"]
+      document.getElementById("homeBtn").style.display="inline-block"
+      document.getElementById("headerProgress").style.display="none"
+      document.getElementById("app").innerHTML=`<button class="section-back" id="allTracks">← All tracks</button><section class="comic-library-head"><p class="eyebrow">${track.icon} Story Track</p><h1>${track.title}</h1><p>${track.description}</p></section><section class="mission-grid">${chapters.map((chapter,index)=>{const complete=index<completedMissions;const unlocked=index<=completedMissions;return `<article class="mission-card ${unlocked?"":"locked"}"><div class="mission-number">Lesson ${index+1}</div><div class="mission-icon">${unlocked?icons[index]:"🔒"}</div><h3>${chapter.title}</h3><p>Learn <span lang="zh-CN">${chapter.word}</span> · ${chapter.meaning}</p><div class="mission-status"><span class="stars">${complete?"★":"☆"}</span><button class="mission-start track-lesson" data-mission="${index}" ${unlocked?"":"disabled"}>${complete?"Practice again":unlocked?"Start lesson":"Locked"}</button></div></article>`}).join("")}</section>${completedMissions===chapters.length?`<button class="btn continue show" id="trackReview">⭐ Review this track</button>`:""}`
+      document.getElementById("allTracks").addEventListener("click",renderStoryTracks)
+      document.querySelectorAll(".track-lesson:not(:disabled)").forEach(button=>button.addEventListener("click",()=>startMission(Number(button.dataset.mission))))
+      document.getElementById("trackReview")?.addEventListener("click",()=>startReview(chapters))
     }
 
     function startMission(index){
