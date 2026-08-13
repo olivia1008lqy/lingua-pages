@@ -15,7 +15,7 @@ Reviewed August 13, 2026. This report covers the static GitHub Pages MVP after i
 - **Curriculum:** The 22 lessons provide useful breadth but not a sequenced grammar syllabus, controlled vocabulary recycling, diagnostic placement, or instructor-reviewed proficiency outcomes.
 - **Challenge variety:** Lessons alternate meaning and listening before speaking, and the Lab adds recall and sentence building. More production, cloze, ordering, role-play, and delayed-recall formats are still needed.
 - **Accessibility:** Keyboard focus, live feedback, reduced motion, language tags, and mobile targets are present. A screen-reader audit, zoom/reflow test, contrast measurement, and VoiceOver/TalkBack device pass remain outstanding.
-- **Progress and rewards:** XP is derived from completions and successful recalls, but repeated reviews can continue increasing recall XP. There are no streak safeguards, milestone definitions, or reward-economy tests.
+- **Progress and rewards:** XP is now bounded and milestone-based (one-time rewards per spaced-repetition strength level, tested to cap per word). Still missing: a visible daily-streak tracker, explicit milestone definitions in the UI, and economy tuning against the pilot.
 - **State management:** Progress is local to one browser and can be exported/imported. There is no schema migration layer, cross-device sync, conflict handling, or recovery from browser storage clearing.
 - **Content operations:** Lessons are stored in a JavaScript data file. There is no authoring workflow, content validation service, localization pipeline, or release versioning for curriculum changes.
 
@@ -39,6 +39,7 @@ Reviewed August 13, 2026. This report covers the static GitHub Pages MVP after i
 - Added accessible expanded state to the context-phrase control.
 - Restricted progress imports to known keys, string values, and a 1 MB file limit.
 - Added an explicit testing notice that browser speech recognition may use the browser or operating system provider's online speech service, which is outside the app's control.
+- Replaced unbounded recall XP with one-time strength-milestone rewards (levels 1–3 worth 5 XP, mastery 10 XP) so repeated reviews can no longer farm XP; rewards are now bounded per word.
 
 ## Requires a backend or specialist API
 

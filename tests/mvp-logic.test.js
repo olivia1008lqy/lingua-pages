@@ -44,7 +44,7 @@ function createApp(saved = {}) {
   vm.runInContext(`${data}\n${appSource}\nthis.__app={
     renderHome,renderStoryTracks,selectTrack,startMission,renderStoryPage,renderMeaningChallenge,renderPracticePage,
     renderVocabularyLab,renderWordBank,startSentenceGame,practiceSentenceSpeech,startReview,renderReviewQuestion,judgePronunciation,
-    registerRecognitionFailure,startRecognition,toggleRecording,cleanupAudio,allLessonRecords,
+    registerRecognitionFailure,startRecognition,toggleRecording,cleanupAudio,allLessonRecords,updateReviewStrength,
     setLesson(id,index,phase="story"){activeTrackId=id;chapters=storyTracks.find(track=>track.id===id).lessons;chapterIndex=index;lessonPhase=phase;beatIndex=0;pronunciationAttempts=0},
     setProgress(value){trackProgress=value},seedMedia(recorder,stream,recognizer){mediaRecorder=recorder;mediaStream=stream;recognition=recognizer},getState(){return {activeTrackId,chapterIndex,lessonPhase,pronunciationAttempts,reviewReturn}}
   };this.__content={storyTracks};`, context)
@@ -53,6 +53,7 @@ function createApp(saved = {}) {
 
 const fresh = createApp()
 assert(fresh.document.getElementById("app").innerHTML.includes("Start your first lesson"), "fresh user home should offer a first lesson")
+assert(fresh.document.getElementById("app").innerHTML.includes("💎 0"), "fresh users must start at zero XP")
 
 const returning = createApp({ linguaTrackProgress: JSON.stringify({ mystery: 2 }), linguaActiveTrack: "mystery", linguaChapter: "1" })
 assert(returning.document.getElementById("app").innerHTML.includes("2 lessons complete"), "returning progress should render")
@@ -121,6 +122,27 @@ assert(fresh.document.getElementById("feedback").innerHTML.includes("Try the ful
 
 fresh.app.startReview([fresh.tracks[0].lessons[0]], true, "home")
 assert(fresh.document.getElementById("app").innerHTML.includes("Daily Review"), "daily review should start")
+
+const economy = createApp()
+economy.app.updateReviewStrength("mystery-0", true)
+assert.equal(economy.storage.get("linguaReviewXp"), "5", "first correct recall earns the level-1 milestone")
+economy.app.updateReviewStrength("mystery-0", true)
+economy.app.updateReviewStrength("mystery-0", true)
+economy.app.updateReviewStrength("mystery-0", true)
+assert.equal(economy.storage.get("linguaReviewXp"), "25", "strength milestones cap at level 4")
+economy.app.updateReviewStrength("mystery-0", false)
+assert.equal(economy.storage.get("linguaReviewXp"), "25", "a miss must not re-award XP")
+economy.app.updateReviewStrength("mystery-0", true)
+assert.equal(economy.storage.get("linguaReviewXp"), "25", "re-learning an earned level earns no new XP")
+
+const fullyBounded = createApp()
+const curriculumLessons = fresh.tracks.reduce((sum, track) => sum + track.lessons.length, 0)
+fullyBounded.app.setProgress(Object.fromEntries(fresh.tracks.map(track => [track.id, track.lessons.length])))
+fullyBounded.app.renderHome()
+assert(fullyBounded.document.getElementById("app").innerHTML.includes(`💎 ${curriculumLessons * 20}`), "lesson XP must be bounded by the lesson curriculum")
+for (let repeat = 0; repeat < 60; repeat++) fullyBounded.app.updateReviewStrength("cafe-0", true)
+assert.equal(fullyBounded.storage.get("linguaReviewXp"), "25", "repeated correct reviews must not exceed the per-word milestone cap")
+assert(Number(fullyBounded.storage.get("linguaReviewXp") || 0) <= curriculumLessons * 20 + 25, "total XP must stay bounded even under repeated reviews")
 
 assert(/@media\(max-width:720px\)/.test(html) && /env\(safe-area-inset-top\)/.test(html), "mobile layout needs a breakpoint and safe-area support")
 let stopped = 0

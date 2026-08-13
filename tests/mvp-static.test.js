@@ -37,5 +37,7 @@ assert(html.includes("cleanupAudio()"), "navigation must clean up active media")
 assert(html.includes('showFeedback("error","Try another answer"'), "meaning challenges need an incorrect-answer branch")
 assert(html.includes('showFeedback("success","Correct"'), "meaning challenges need a correct-answer branch")
 assert(!html.includes("pronunciation score"), "browser transcription must not be described as pronunciation scoring")
+assert(html.includes("linguaReviewXp"), "review XP must use the bounded milestone counter")
+assert(!html.includes("reviewCorrect*5"), "unbounded recall XP must be removed")
 
 console.log(`MVP static checks passed: ${storyTracks.length} tracks, ${storyTracks.reduce((sum, track) => sum + track.lessons.length, 0)} lessons`)
