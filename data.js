@@ -191,12 +191,62 @@ const storyTracks = [
       "The team decides to stay late and finish the report tonight."],
      mystery:"Explain why the team is still at work.",
      scene:{ask:"Why did the team stay late?",choices:["To finish the report","To wait for a client","To celebrate"],answer:"To finish the report"},
-     word:"加班",pinyin:"jiā bān",meaning:"work overtime",tip:"Keep both syllables high and level."}]}
+     word:"加班",pinyin:"jiā bān",meaning:"work overtime",tip:"Keep both syllables high and level."}]},
+  {id:"festival",icon:"🏮",title:"Mid-Autumn Festival",description:"Celebrate with mooncakes, family, friends, and festival greetings.",lessons:[
+    {title:"Mooncakes for Everyone",beats:[
+      "Lanterns glow along the street as Mei carries a box of mooncakes to the neighborhood picnic.",
+      "Everyone gathers as the full moon rises over the courtyard."],
+     mystery:"Offer a mooncake to start the festival celebration.",
+     scene:{ask:"What did Mei bring to the picnic?",choices:["A box of mooncakes","A bag of apples","A birthday cake"],answer:"A box of mooncakes"},
+     word:"月饼",pinyin:"yuè bǐng",meaning:"mooncake",tip:"Let <strong>yuè</strong> fall sharply, then let <strong>bǐng</strong> dip and rise."},
+    {title:"Family Around the Table",beats:[
+      "At the big round table, three generations laugh over steaming tea.",
+      "Mei's grandmother tells the story of the lady who lives on the moon."],
+     mystery:"Tell the family the mooncake is delicious.",
+     scene:{ask:"Who told the story of the lady on the moon?",choices:["Mei's grandmother","A shop owner","Mei's teacher"],answer:"Mei's grandmother"},
+     word:"家人",pinyin:"jiā rén",meaning:"family",tip:"Keep <strong>jiā</strong> high and level, then let <strong>rén</strong> rise."},
+    {title:"A Friend from the Market",beats:[
+      "At the lantern market, Mei meets a friend she has not seen since last summer.",
+      "He carries a glowing rabbit lantern and waves from across the square."],
+     mystery:"Greet your friend and ask how the evening is going.",
+     scene:{ask:"What was Mei's friend carrying?",choices:["A rabbit lantern","A box of tea","A new phone"],answer:"A rabbit lantern"},
+     word:"朋友",pinyin:"péng you",meaning:"friend",tip:"Let <strong>péng</strong> rise, then say <strong>you</strong> lightly and softly."},
+    {title:"A Happy Night",beats:[
+      "Fireworks bloom over the river as the festival reaches its peak.",
+      "Mei waves goodbye, promising to practice Mandarin together next month."],
+     mystery:"Wish everyone a happy festival.",
+     scene:{ask:"What filled the sky at the end of the night?",choices:["Fireworks","Snow","Birds"],answer:"Fireworks"},
+     word:"快乐",pinyin:"kuài lè",meaning:"happy",tip:"Drop <strong>kuài</strong> firmly, then keep <strong>lè</strong> light."}]},
+  {id:"food",icon:"🥟",title:"Taste of the Street",description:"Order street food, handle spice, read menus, and pay like a local.",lessons:[
+    {title:"A Steaming Basket",beats:[
+      "The night market glows as Zhao orders a basket of dumplings from a tiny stall.",
+      "Steam rises, and the owner slides the bamboo basket across the counter."],
+     mystery:"Taste the dumpling and describe it to your friend.",
+     scene:{ask:"What did Zhao order from the stall?",choices:["A basket of dumplings","A bowl of soup","A plate of fruit"],answer:"A basket of dumplings"},
+     word:"好吃",pinyin:"hǎo chī",meaning:"delicious",tip:"Let <strong>hǎo</strong> dip and rise, then keep <strong>chī</strong> high and level."},
+    {title:"Too Spicy",beats:[
+      "Zhao points at the red pepper dish, and the vendor warns her with a smile.",
+      "The first bite lights up the whole table."],
+     mystery:"Tell the vendor the food is spicy.",
+     scene:{ask:"Why did the vendor warn Zhao?",choices:["The dish was very spicy","It was too hot to serve","It was sold out"],answer:"The dish was very spicy"},
+     word:"辣",pinyin:"là",meaning:"spicy",tip:"Let <strong>là</strong> fall firmly, as if stamping the word down."},
+    {title:"The Menu Mystery",beats:[
+      "Zhao wants the sesame noodles, but every dish name is written in Chinese.",
+      "A kind student at the next table helps her order."],
+     mystery:"Ask for the menu to choose the next dish.",
+     scene:{ask:"How did Zhao find her dish?",choices:["A student helped her order","She brought a translator","The vendor spoke English"],answer:"A student helped her order"},
+     word:"菜单",pinyin:"cài dān",meaning:"menu",tip:"Drop <strong>cài</strong>, then keep <strong>dān</strong> high and level."},
+    {title:"The Night Bill",beats:[
+      "After two hours of street food, Zhao waves to the stall owner for the bill.",
+      "He prints a short receipt and wishes her a good night."],
+     mystery:"Ask for the bill and close the night.",
+     scene:{ask:"What did Zhao ask for at the end of the night?",choices:["The bill","A map","A photo"],answer:"The bill"},
+     word:"买单",pinyin:"mǎi dān",meaning:"pay the bill",tip:"Let <strong>mǎi</strong> dip and rise, then keep <strong>dān</strong> high and level."}]}
 ]
 
-const trackGuides={mystery:{name:"Lila",face:"🕵🏻‍♀️",line:"Follow the evidence and unlock the next chapter."},cafe:{name:"Mei",face:"👩🏻‍🍳",line:"Practice language you can use at a café."},school:{name:"Lan",face:"👩🏻‍💼",line:"Build confidence for workplace conversations."},postcards:{name:"Ava",face:"👩🏽",line:"Use practical Chinese throughout the weekend."},city:{name:"Jiayi",face:"👩🏻‍💻",line:"Navigate the city after work."}}
+const trackGuides={mystery:{name:"Lila",face:"🕵🏻‍♀️",line:"Follow the evidence and unlock the next chapter."},cafe:{name:"Mei",face:"👩🏻‍🍳",line:"Practice language you can use at a café."},school:{name:"Lan",face:"👩🏻‍💼",line:"Build confidence for workplace conversations."},postcards:{name:"Ava",face:"👩🏽",line:"Use practical Chinese throughout the weekend."},city:{name:"Jiayi",face:"👩🏻‍💻",line:"Navigate the city after work."},festival:{name:"Yue",face:"🧧",line:"Celebrate the festival and learn words for family and mooncakes."},food:{name:"Zhao",face:"👩🏻‍🍳",line:"Taste the street and learn the words of the night market."}}
 
-const lessonExamples={"书店":"书店在哪里？","秘密":"这是一个秘密。","镜子":"镜子在房间里。","月亮":"今晚的月亮很亮。","钥匙":"我的钥匙在哪里？","花园":"花园很安静。","你好":"你好，很高兴认识你。","茶":"我要一杯茶。","三个":"我要三个。","谢谢":"谢谢你的帮助。","同事":"她是我的同事。","会议":"会议几点开始？","明天":"我们明天见。","很忙":"我今天很忙。","酒店":"酒店在哪里？","哪里":"洗手间在哪里？","红色":"我喜欢红色。","下雨":"今天下雨。","地铁":"我坐地铁去公司。","预订":"我有预订。","账单":"请给我账单。","加班":"我今天要加班。"}
+const lessonExamples={"书店":"书店在哪里？","秘密":"这是一个秘密。","镜子":"镜子在房间里。","月亮":"今晚的月亮很亮。","钥匙":"我的钥匙在哪里？","花园":"花园很安静。","你好":"你好，很高兴认识你。","茶":"我要一杯茶。","三个":"我要三个。","谢谢":"谢谢你的帮助。","同事":"她是我的同事。","会议":"会议几点开始？","明天":"我们明天见。","很忙":"我今天很忙。","酒店":"酒店在哪里？","哪里":"洗手间在哪里？","红色":"我喜欢红色。","下雨":"今天下雨。","地铁":"我坐地铁去公司。","预订":"我有预订。","账单":"请给我账单。","加班":"我今天要加班。","月饼":"月饼很好吃。","家人":"我的家人在这里。","朋友":"他是我的朋友。","快乐":"中秋节快乐！","好吃":"这个很好吃。","辣":"这个菜很辣。","菜单":"请给我菜单。","买单":"我要买单。"}
 
 const sentencePractice=[
   {word:"你好",en:"Hello, nice to meet you.",parts:["你好","很高兴","认识你"],text:"你好，很高兴认识你。"},
@@ -209,5 +259,15 @@ const sentencePractice=[
   {word:"地铁",en:"I take the metro to the office.",parts:["我","坐","地铁","去","公司"],text:"我坐地铁去公司。"},
   {word:"预订",en:"I have a reservation.",parts:["我","有","预订"],text:"我有预订。"},
   {word:"账单",en:"Please give me the bill.",parts:["请","给我","账单"],text:"请给我账单。"},
-  {word:"加班",en:"I need to work overtime today.",parts:["我","今天","要","加班"],text:"我今天要加班。"}
+  {word:"加班",en:"I need to work overtime today.",parts:["我","今天","要","加班"],text:"我今天要加班。"},
+  {word:"月饼",en:"I would like two mooncakes.",parts:["我","要","两","个","月饼"],text:"我要两个月饼。"},
+  {word:"家人",en:"My family is here.",parts:["我的","家人","在","这里"],text:"我的家人在这里。"},
+  {word:"好吃",en:"This food is delicious.",parts:["这个","很","好吃"],text:"这个很好吃。"},
+  {word:"菜单",en:"Please give me the menu.",parts:["请","给","我","菜单"],text:"请给我菜单。"}
+]
+
+const shopItems=[
+  {id:"theme-midnight",icon:"🌙",title:"Midnight theme",desc:"A calm dark look for late-night reading and evening practice.",cost:120},
+  {id:"theme-forest",icon:"🌲",title:"Forest theme",desc:"Soft greens and warm paper for relaxed, focused study.",cost:120},
+  {id:"streak-freeze",icon:"❄️",title:"Streak Freeze",desc:"Protects your daily streak once when you miss a day of review.",cost:60}
 ]

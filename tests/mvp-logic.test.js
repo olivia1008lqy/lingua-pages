@@ -46,7 +46,8 @@ function createApp(saved = {}) {
     renderVocabularyLab,renderWordBank,startSentenceGame,practiceSentenceSpeech,startReview,renderReviewQuestion,judgePronunciation,
     registerRecognitionFailure,startRecognition,toggleRecording,cleanupAudio,allLessonRecords,updateReviewStrength,
     setLesson(id,index,phase="story"){activeTrackId=id;chapters=storyTracks.find(track=>track.id===id).lessons;chapterIndex=index;lessonPhase=phase;beatIndex=0;pronunciationAttempts=0},
-    setProgress(value){trackProgress=value},seedMedia(recorder,stream,recognizer){mediaRecorder=recorder;mediaStream=stream;recognition=recognizer},getState(){return {activeTrackId,chapterIndex,lessonPhase,pronunciationAttempts,reviewReturn}}
+    setProgress(value){trackProgress=value},seedMedia(recorder,stream,recognizer){mediaRecorder=recorder;mediaStream=stream;recognition=recognizer},getState(){return {activeTrackId,chapterIndex,lessonPhase,pronunciationAttempts,reviewReturn}},
+    applyTheme,addCoins,updateStreak,startQuiz,renderQuizQuestion,renderShop,getCoins(){return coins},getStreak(){return streak}
   };this.__content={storyTracks};`, context)
   return { app: context.__app, tracks: context.__content.storyTracks, elements, document, context, storage }
 }
@@ -123,6 +124,19 @@ assert(fresh.document.getElementById("feedback").innerHTML.includes("Try the ful
 fresh.app.startReview([fresh.tracks[0].lessons[0]], true, "home")
 assert(fresh.document.getElementById("app").innerHTML.includes("Daily Review"), "daily review should start")
 
+const quiz = createApp({ linguaTrackProgress: JSON.stringify({ mystery: 1 }) })
+quiz.app.startQuiz()
+assert(quiz.document.getElementById("app").innerHTML.includes("Word Quiz"), "quiz should start once words are learned")
+assert(quiz.document.getElementById("headerProgress").style.display === "block", "quiz should show progress in the header bar")
+quiz.app.addCoins(50)
+assert.equal(quiz.storage.get("linguaCoins"), "50", "coins should persist to storage")
+quiz.app.renderShop()
+assert(quiz.document.getElementById("app").innerHTML.includes("Moonlight Shop"), "shop should render")
+quiz.app.updateStreak()
+assert(Number(quiz.storage.get("linguaStreak")) >= 0, "streak should initialize without error")
+quiz.app.applyTheme("midnight")
+assert.equal(quiz.document.body["data-theme"], "midnight", "purchased theme should apply to the document body")
+
 const economy = createApp()
 economy.app.updateReviewStrength("mystery-0", true)
 assert.equal(economy.storage.get("linguaReviewXp"), "5", "first correct recall earns the level-1 milestone")
@@ -150,4 +164,4 @@ fresh.app.seedMedia({ state: "recording", stop() { stopped++ } }, { getTracks: (
 fresh.app.cleanupAudio()
 assert.equal(stopped, 3, "navigation cleanup must stop recording, recognition, and media tracks")
 
-deniedCheck.then(() => console.log("MVP logic checks passed: fresh/returning users, 5 tracks, lesson variants, permission and speech fallbacks, active-media cleanup, Lab, review, and mobile CSS"))
+deniedCheck.then(() => console.log("MVP logic checks passed: fresh/returning users, 7 tracks, lesson variants, permission and speech fallbacks, active-media cleanup, Lab, review, quiz, shop, coins, streaks, themes, and mobile CSS"))

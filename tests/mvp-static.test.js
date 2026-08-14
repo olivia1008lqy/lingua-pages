@@ -16,9 +16,9 @@ vm.createContext(context)
 vm.runInContext(`${dataSource}\nthis.__content={storyTracks,trackGuides,lessonExamples,sentencePractice,comics}`, context)
 const { storyTracks, trackGuides, lessonExamples, sentencePractice } = context.__content
 
-assert.equal(storyTracks.length, 5, "expected five story tracks")
-assert.deepEqual(storyTracks.map(track => track.id), ["mystery", "cafe", "school", "postcards", "city"])
-assert.deepEqual(storyTracks.map(track => trackGuides[track.id].name), ["Lila", "Mei", "Lan", "Ava", "Jiayi"])
+assert.equal(storyTracks.length, 7, "expected seven story tracks")
+assert.deepEqual(storyTracks.map(track => track.id), ["mystery", "cafe", "school", "postcards", "city", "festival", "food"])
+assert.deepEqual(storyTracks.map(track => trackGuides[track.id].name), ["Lila", "Mei", "Lan", "Ava", "Jiayi", "Yue", "Zhao"])
 
 for (const track of storyTracks) {
   assert(track.lessons.length >= 4, `${track.id} needs a usable lesson sequence`)
