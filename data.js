@@ -72,18 +72,22 @@ const mysteryChapters = [
 ]
 
 const comics = [
-  {title:"Coffee Before Work",cover:"☕🏙️",badge:"Morning Regular",panels:[
+  {title:"Coffee Before Work",cover:"☕🏙️",badge:"Morning Regular",image:"images/72752AF5-5B43-420A-8508-6D9753BE16A5.png",lesson:{word:"咖啡",pinyin:"kā fēi",meaning:"coffee",tip:"Keep <strong>kā</strong> high and level, then let <strong>fēi</strong> rise."},panels:[
     {scene:"🏙️　🧑🏻　☕",zh:"早上好。",py:"zǎo shang hǎo.",en:"Good morning."},
     {scene:"☕　➡️　🧑🏻",zh:"我要一杯咖啡。",py:"wǒ yào yì bēi kā fēi.",en:"I would like a coffee."},
     {scene:"📱　☕　✓",zh:"可以刷卡吗？",py:"kě yǐ shuā kǎ ma?",en:"Can I pay by card?"}]},
-  {title:"A Client Dinner",cover:"🍽️🌃",badge:"Dinner Ready",panels:[
+  {title:"A Client Dinner",cover:"🍽️🌃",badge:"Dinner Ready",image:"images/985391F5-6CB8-4A91-95B3-E96C400C27F8(1).png",lesson:{word:"预订",pinyin:"yù dìng",meaning:"reservation",tip:"Both syllables fall; keep each one clear and decisive."},panels:[
     {scene:"🌃　🧑🏻‍💼　🍽️",zh:"我有预订。",py:"wǒ yǒu yù dìng.",en:"I have a reservation."},
     {scene:"📖　🥢　🧑🏻‍💼",zh:"你推荐什么？",py:"nǐ tuī jiàn shén me?",en:"What do you recommend?"},
     {scene:"🧾　💳",zh:"请给我账单。",py:"qǐng gěi wǒ zhàng dān.",en:"Please give me the bill."}]},
-  {title:"An Evening in the City",cover:"🚇🌆",badge:"City Navigator",panels:[
+  {title:"An Evening in the City",cover:"🚇🌆",badge:"City Navigator",image:"images/7299D884-31EE-4B51-9836-FE41169E0D51.png",lesson:{word:"地铁",pinyin:"dì tiě",meaning:"metro",tip:"Drop <strong>dì</strong>, then let <strong>tiě</strong> dip and rise."},panels:[
     {scene:"🌆　🚇　🧑🏽",zh:"地铁站在哪里？",py:"dì tiě zhàn zài nǎ lǐ?",en:"Where is the metro station?"},
     {scene:"🗺️　⬅️　🏢",zh:"一直走，然后左转。",py:"yì zhí zǒu, rán hòu zuǒ zhuǎn.",en:"Go straight, then turn left."},
-    {scene:"🚇　✓　🌙",zh:"谢谢你的帮助。",py:"xiè xie nǐ de bāng zhù.",en:"Thank you for your help."}]}
+    {scene:"🚇　✓　🌙",zh:"谢谢你的帮助。",py:"xiè xie nǐ de bāng zhù.",en:"Thank you for your help."}]},
+  {title:"At the Airport",cover:"✈️🧳",badge:"Ready to Board",image:"images/52346D6B-FE98-405B-AE23-A106AB4394D1.png",lesson:{word:"机场",pinyin:"jī chǎng",meaning:"airport",tip:"Keep <strong>jī</strong> high and level, then let <strong>chǎng</strong> dip and rise."},panels:[
+    {scene:"✈️　🧳　🧑🏽",zh:"去机场怎么走？",py:"qù jī chǎng zěn me zǒu?",en:"How do I get to the airport?"},
+    {scene:"🗺️　➡️　🚕",zh:"坐出租车，大概二十分钟。",py:"zuò chū zū chē, dà gài èr shí fēn zhōng.",en:"Take a taxi, about twenty minutes."},
+    {scene:"🧳　✓　✈️",zh:"谢谢，再见！",py:"xiè xie, zài jiàn!",en:"Thank you, goodbye!"}]}
 ]
 
 const storyTracks = [
